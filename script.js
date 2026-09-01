@@ -199,4 +199,136 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
   }
 
+  /* ── Highlight today's day pill (Asia/Karachi) ── */
+  const pills = document.querySelectorAll('#dayPills li');
+  if (pills.length) {
+    const DAYS = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0 };
+    const weekday = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Karachi',
+      weekday: 'short'
+    }).format(new Date());
+    const today = DAYS[weekday];
+    pills.forEach(li => {
+      li.classList.toggle('today', parseInt(li.dataset.day, 10) === today);
+    });
+  }
+
+  /* ── Reviews carousel ── */
+  const carouselViewport = document.getElementById('reviewsViewport');
+  const carouselTrack = document.getElementById('reviewsTrack');
+  if (carouselViewport && carouselTrack) {
+    const cardsArr = Array.from(carouselTrack.children);
+    const baseGap = 24;
+    const prevBtn = document.getElementById('revPrev');
+    const nextBtn = document.getElementById('revNext');
+    const dotsWrap = document.getElementById('revDots');
+
+    let index = 0;
+    let perView = 3;
+    let maxIndex = 0;
+    let cardW = 340;
+    let timer = null;
+    let resizing = null;
+
+    const getGap = () => {
+      const style = window.getComputedStyle(carouselTrack);
+      const raw = style.columnGap || style.gap;
+      const parsed = parseFloat(raw);
+      return isNaN(parsed) ? baseGap : parsed;
+    };
+
+    const buildDots = () => {
+      dotsWrap.innerHTML = '';
+      for (let i = 0; i <= maxIndex; i++) {
+        const dot = document.createElement('button');
+        dot.setAttribute('aria-label', `Go to review slide ${i + 1}`);
+        dot.addEventListener('click', () => {
+          index = i;
+          render(true);
+          restartTimer();
+        });
+        dotsWrap.appendChild(dot);
+      }
+      updateDots();
+    };
+
+    const updateDots = () => {
+      const dots = dotsWrap.children;
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].classList.toggle('active', i === index);
+      }
+    };
+
+    const render = (animate) => {
+      const gap = getGap();
+      carouselTrack.style.transition = animate ? '' : 'none';
+      carouselTrack.style.transform = `translateX(-${index * (cardW + gap)}px)`;
+      updateDots();
+    };
+
+    const setup = () => {
+      const gap = getGap();
+      const available = carouselViewport.clientWidth;
+      perView = available < 620 ? 1 : available < 980 ? 2 : 3;
+      perView = Math.min(perView, cardsArr.length);
+      cardW = (available - gap * (perView - 1)) / perView;
+      cardsArr.forEach(c => { c.style.width = `${cardW}px`; });
+      maxIndex = cardsArr.length - perView;
+      index = Math.min(index, maxIndex);
+      buildDots();
+      render(false);
+    };
+
+    const restartTimer = () => {
+      if (timer) { clearInterval(timer); }
+      timer = setInterval(advance, 4000);
+    };
+
+    const advance = () => {
+      if (index < maxIndex) {
+        index++;
+        render(true);
+      } else {
+        carouselTrack.classList.add('is-fading');
+        setTimeout(() => {
+          index = 0;
+          render(false);
+          carouselTrack.classList.remove('is-fading');
+          updateDots();
+        }, 360);
+      }
+    };
+
+    const back = () => {
+      if (index > 0) {
+        index--;
+        render(true);
+      } else {
+        carouselTrack.classList.add('is-fading');
+        setTimeout(() => {
+          index = maxIndex;
+          render(false);
+          carouselTrack.classList.remove('is-fading');
+          updateDots();
+        }, 360);
+      }
+    };
+
+    prevBtn.addEventListener('click', () => { back(); restartTimer(); });
+    nextBtn.addEventListener('click', () => { advance(); restartTimer(); });
+
+    carouselViewport.addEventListener('mouseenter', () => { if (timer) { clearInterval(timer); timer = null; } });
+    carouselViewport.addEventListener('mouseleave', restartTimer);
+    carouselViewport.addEventListener('touchstart', () => { if (timer) { clearInterval(timer); timer = null; } }, { passive: true });
+    carouselViewport.addEventListener('touchend', restartTimer, { passive: true });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(resizing);
+      resizing = setTimeout(setup, 120);
+    });
+
+    setup();
+    restartTimer();
+  }
+
 });

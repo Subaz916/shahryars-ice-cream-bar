@@ -62,6 +62,7 @@
         <li><a href="#flavors">Flavors</a></li>
         <li><a href="#more">More</a></li>
         <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#hours">Hours</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -79,6 +80,7 @@
     <a href="#flavors"><span class="m-icon">🍨</span> Flavors</a>
     <a href="#more"><span class="m-icon">🥤</span> More to Enjoy</a>
     <a href="#gallery"><span class="m-icon">📸</span> Gallery</a>
+    <a href="#hours"><span class="m-icon">⏰</span> Opening Hours</a>
     <a href="#about"><span class="m-icon">⭐</span> About Us</a>
     <a href="#contact"><span class="m-icon">📍</span> Location & Contact</a>
   </div>
@@ -528,42 +530,152 @@
         <div class="accent-bar"></div>
       </div>
 
-      <div class="reviews-grid" data-reveal>
-        <div class="review-card">
-          <div class="rev-stars">★★★★☆</div>
-          <p class="rev-text">"Best ice cream in Gojra! The Pista flavor is my all-time favourite — fresh, creamy, and so rich. Highly recommended."</p>
-          <div class="rev-author">
-            <span class="rev-avatar">A</span>
-            <div>
-              <h4>Ahmed R.</h4>
-              <span>Google Review</span>
+      <div class="reviews-carousel" data-reveal>
+        <div class="reviews-viewport" id="reviewsViewport">
+          <div class="reviews-track" id="reviewsTrack">
+            <div class="review-card">
+              <div class="rev-stars">★★★★☆</div>
+              <p class="rev-text">"Best ice cream in Gojra! The Pista flavor is my all-time favourite — fresh, creamy, and so rich. Highly recommended."</p>
+              <div class="rev-author">
+                <span class="rev-avatar">A</span>
+                <div>
+                  <h4>Ahmed R.</h4>
+                  <span>Google Review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="rev-stars">★★★★★</div>
+              <p class="rev-text">"Their family pack is perfect for get-togethers. Great value and delicious flavors. The staff is really friendly too."</p>
+              <div class="rev-author">
+                <span class="rev-avatar">F</span>
+                <div>
+                  <h4>Fatima S.</h4>
+                  <span>Google Review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="rev-stars">★★★★★</div>
+              <p class="rev-text">"A gem in the heart of Gojra. Clean place, amazing falooda, and the best shakes in town. A must-visit!"</p>
+              <div class="rev-author">
+                <span class="rev-avatar">B</span>
+                <div>
+                  <h4>Bilal K.</h4>
+                  <span>Google Review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="rev-stars">★★★★★</div>
+              <p class="rev-text">"Took my kids here for a treat — they loved the chocolate and mango scoops. Very affordable and always fresh."</p>
+              <div class="rev-author">
+                <span class="rev-avatar">S</span>
+                <div>
+                  <h4>Sana M.</h4>
+                  <span>Google Review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="rev-stars">★★★★☆</div>
+              <p class="rev-text">"The Kashmiri chai in winter is unbeatable. Cozy place with a warm, welcoming vibe. Highly recommended!"</p>
+              <div class="rev-author">
+                <span class="rev-avatar">U</span>
+                <div>
+                  <h4>Usman A.</h4>
+                  <span>Google Review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="rev-stars">★★★★★</div>
+              <p class="rev-text">"Love the green tea and ice cream combo after dinner. Great service and a lovely spot in the bazar."</p>
+              <div class="rev-author">
+                <span class="rev-avatar">Z</span>
+                <div>
+                  <h4>Zainab T.</h4>
+                  <span>Google Review</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="review-card">
-          <div class="rev-stars">★★★★★</div>
-          <p class="rev-text">"Their family pack is perfect for get-togethers. Great value and delicious flavors. The staff is really friendly too."</p>
-          <div class="rev-author">
-            <span class="rev-avatar">F</span>
-            <div>
-              <h4>Fatima S.</h4>
-              <span>Google Review</span>
-            </div>
+        <button class="rev-nav rev-prev" id="revPrev" aria-label="Previous reviews">←</button>
+        <button class="rev-nav rev-next" id="revNext" aria-label="Next reviews">→</button>
+        <div class="rev-dots" id="revDots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════ OPENING HOURS ════════════════ -->
+  <section id="hours">
+    <div class="hours-bg">
+      <span class="hb-emoji hb-1">🍦</span>
+      <span class="hb-emoji hb-2">🍨</span>
+      <span class="hb-emoji hb-3">🧇</span>
+      <span class="hb-emoji hb-4">🍓</span>
+      <span class="hb-emoji hb-5">🍫</span>
+      <span class="hb-emoji hb-6">🥛</span>
+    </div>
+
+    <div class="container">
+      <div class="section-header" data-reveal>
+        <span class="overline">When to Visit</span>
+        <h2>Opening Hours</h2>
+        <p>Open Monday to Friday — and through the weekend too</p>
+        <div class="accent-bar"></div>
+      </div>
+
+      <!-- Day pills -->
+      <ul class="day-pills" id="dayPills">
+        <li data-day="1">Mon</li>
+        <li data-day="2">Tue</li>
+        <li data-day="3">Wed</li>
+        <li data-day="4">Thu</li>
+        <li data-day="5">Fri</li>
+        <li data-day="6">Sat</li>
+        <li data-day="0">Sun</li>
+      </ul>
+
+      <div class="hours-grid" data-stagger>
+
+        <div class="hours-card hours-weekday" data-reveal="left">
+          <span class="hc-blob">🍦</span>
+          <div class="hours-icon">🗓️</div>
+          <div class="hours-days">
+            <span>Monday</span> – <span>Friday</span>
           </div>
+          <div class="hours-time">
+            <span class="ht-1">12:00</span><b>PM</b>
+            <i>to</i>
+            <span class="ht-2">12:00</span><b>AM</b>
+          </div>
+          <span class="hours-badge">Weekdays</span>
+          <div class="hc-shine"></div>
         </div>
 
-        <div class="review-card">
-          <div class="rev-stars">★★★★★</div>
-          <p class="rev-text">"A gem in the heart of Gojra. Clean place, amazing falooda, and the best shakes in town. A must-visit!"</p>
-          <div class="rev-author">
-            <span class="rev-avatar">B</span>
-            <div>
-              <h4>Bilal K.</h4>
-              <span>Google Review</span>
-            </div>
+        <div class="hours-card hours-weekend" data-reveal="right">
+          <span class="hc-blob">🍨</span>
+          <div class="hours-icon">🎉</div>
+          <div class="hours-days">
+            <span>Saturday</span> – <span>Sunday</span>
           </div>
+          <div class="hours-time">
+            <span class="ht-1">12:00</span><b>PM</b>
+            <i>to</i>
+            <span class="ht-2">12:00</span><b>AM</b>
+          </div>
+          <span class="hours-badge">Weekend</span>
+          <div class="hc-shine"></div>
         </div>
+
       </div>
     </div>
   </section>
@@ -607,14 +719,6 @@
             </div>
           </div>
 
-          <div class="contact-row">
-            <div class="cr-icon">⏰</div>
-            <div class="cr-info">
-              <h4>Opening Hours</h4>
-              <p>Open Daily &middot; 12:00 PM – 12:00 AM</p>
-            </div>
-          </div>
-
           <div class="contact-actions">
             <a href="tel:+923337254555" class="btn btn-primary">Call Now</a>
             <a href="https://wa.me/923337254555" target="_blank" rel="noopener" class="btn btn-whatsapp"><span class="wa-icon"></span>WhatsApp</a>
@@ -655,6 +759,7 @@
           <a href="#menu">Menu & Prices</a>
           <a href="#flavors">Flavors</a>
           <a href="#more">More to Enjoy</a>
+          <a href="#hours">Opening Hours</a>
         </div>
 
         <div class="footer-col">
