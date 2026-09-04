@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Flavors | Shahryar's Ice Cream Bar</title>
+  <meta name="description" content="Explore all our handcrafted ice cream flavors at Shahryar's Ice Cream Bar in Gojra. From classic Pista to exotic Mango and rich Chocolate Chip.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="All Flavors | Shahryar's Ice Cream Bar">
+  <meta property="og:description" content="Discover our full range of handcrafted ice cream flavors.">
+  <meta property="og:locale" content="en_PK">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="preloader" id="preloader">
+    <img src="logo.png" alt="Shahryar's Ice Cream Bar">
+    <div class="preloader-bar"><span></span></div>
+  </div>
+
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <img class="brand-icon" src="logo.png" alt="Shahryar's Ice Cream Bar">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="menu.html">Menu</a></li>
+        <li><a href="flavors.html" class="active">Flavors</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#hours">Hours</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html"><span class="m-icon">🏠</span> Home</a>
+    <a href="menu.html"><span class="m-icon">📋</span> Menu & Prices</a>
+    <a href="flavors.html"><span class="m-icon">🍨</span> Flavors</a>
+    <a href="index.html#gallery"><span class="m-icon">📸</span> Gallery</a>
+    <a href="index.html#hours"><span class="m-icon">⏰</span> Opening Hours</a>
+    <a href="index.html#about"><span class="m-icon">⭐</span> About Us</a>
+    <a href="index.html#contact"><span class="m-icon">📍</span> Location & Contact</a>
+  </div>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-hero-content">
+        <span class="overline">Fresh & Delicious</span>
+        <h1>Our <span>Flavors</span></h1>
+        <p>Discover our full range of handcrafted ice cream flavors, made fresh daily with premium ingredients.</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="flavors-page">
+    <div class="container">
+      <div class="flavors-grid" id="flavorsGrid"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="fb-name">Shahryar's <span>Ice Cream Bar</span></div>
+          <p class="fb-tagline">"A Taste You'll Love"</p>
+          <p>Your local ice cream destination in Gojra, offering delicious flavors, scoops, special desserts, and family packs.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <a href="index.html">Home</a>
+          <a href="menu.html">Menu & Prices</a>
+          <a href="flavors.html">Flavors</a>
+          <a href="index.html#hours">Opening Hours</a>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html#gallery">Gallery</a>
+          <a href="index.html#about">About Us</a>
+          <a href="index.html#contact">Location & Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="tel:+923337254555">+92 333 7254555</a>
+          <a href="https://maps.app.goo.gl/cbA45giLJu57Stsm6" target="_blank" rel="noopener">Gojra, Punjab</a>
+          <p style="margin-top:10px; font-size:0.85rem; line-height:1.6;">Open for Dine-in,<br>Drive-through</p>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Shahryar's Ice Cream Bar. All rights reserved. &nbsp;|&nbsp; Fresh Scoops. Delicious Moments.</p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="Back to top">↑</button>
+
+  <div class="fab-wrap" id="fabWrap">
+    <a class="fab-act fab-wa" href="https://wa.me/923337254555" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+      <svg viewBox="0 0 32 32" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.26.6 4.46 1.72 6.41L3.2 28.8l6.56-1.72a12.76 12.76 0 0 0 6.24 1.6h.01c7.05 0 12.79-5.74 12.79-12.8s-5.74-12.68-12.79-12.68zm7.46 18.28c-.31.88-1.82 1.69-2.55 1.75-.66.06-1.55.09-2.48-.15-1.17-.31-3.29-1.13-5.66-3.4-2.25-2.16-3.57-4.38-3.9-5.1-.46-.97-.27-1.73.05-2.23.23-.36.69-.89 1.26-1.13.28-.11.6-.06.86.08.31.17.54.51.77.85.4.59.91 1.31 1.15 1.76.14.26.16.57.05.85-.66 1.69-1.4 1.72-1.22 2.01.26.5.87 1.53 1.6 2.32 1.07 1.16 2 1.49 2.27 1.63.16.08.36.13.54.05.27-.11.51-.4.83-.86.24-.35.55-.4.9-.29.35.11 2.18 1.03 2.56 1.22.37.19.62.28.71.44.1.16.08.93-.23 1.81z"/></svg>
+    </a>
+    <a class="fab-act fab-call" href="tel:+923337254555" aria-label="Call us">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
+    </a>
+    <button class="fab-toggle" id="fabToggle" aria-label="Contact options">
+      <span class="fab-ico fab-ico-open">💬</span>
+      <span class="fab-ico fab-ico-close">✕</span>
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="data.js"></script>
+  <script src="site-flavors.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

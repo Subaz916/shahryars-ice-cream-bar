@@ -118,9 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   toTopBtn.addEventListener('click', () => {
-    const hero = document.getElementById('home');
-    const top = hero ? hero.getBoundingClientRect().top + window.pageYOffset : 0;
-    window.scrollTo({ top, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   /* ── Floating contact toggle ── */

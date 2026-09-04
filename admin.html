@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | Shahryar's Ice Cream Bar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <!-- Login Overlay -->
+  <div class="admin-login-overlay" id="adminLoginOverlay">
+    <div class="login-box">
+      <div class="login-icon">🔐</div>
+      <h2>Admin Access</h2>
+      <p class="login-subtitle">Enter your credentials to unlock the panel</p>
+
+      <!-- Step 1: Phone -->
+      <div class="login-step" id="loginStepPhone">
+        <div class="a-field">
+          <label>Phone Number</label>
+          <input type="tel" id="loginPhone" placeholder="03337254555" maxlength="15" autocomplete="tel">
+        </div>
+        <button class="a-btn a-btn-primary" id="btnPhoneNext">Continue</button>
+        <p class="login-error" id="phoneError"></p>
+      </div>
+
+      <!-- Step 2: PIN -->
+      <div class="login-step hidden" id="loginStepPin">
+        <div class="a-field">
+          <label>4-Digit PIN</label>
+          <input type="password" id="loginPin" placeholder="****" maxlength="4" autocomplete="one-time-code" inputmode="numeric">
+        </div>
+        <button class="a-btn a-btn-primary" id="btnPinSubmit">Unlock</button>
+        <button class="a-btn a-btn-ghost" id="btnPinBack">← Back</button>
+        <p class="login-error" id="pinError"></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="admin-title">
+        <span class="admin-logo">🍦</span>
+        <div>
+          <h1>Admin Panel</h1>
+          <small>Shahryar's Ice Cream Bar — manage your site content</small>
+        </div>
+      </div>
+      <div class="admin-header-actions">
+        <a href="index.html" class="a-btn a-btn-link">← View Site</a>
+        <button class="a-btn a-btn-ghost" id="btnLogout" style="padding:6px 10px;font-size:0.8rem;">Logout</button>
+        <span id="connStatus" class="conn-badge">Connecting…</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="admin-tabs" id="adminTabs">
+    <button data-tab="menu" class="active">🍦 Menu Items</button>
+    <button data-tab="categories">🗂️ Categories</button>
+    <button data-tab="flavors">🍨 Flavors</button>
+    <button data-tab="gallery">📸 Gallery</button>
+    <button data-tab="hours">🕐 Opening Hours</button>
+    <button data-tab="settings">⚙️ Site Settings</button>
+  </nav>
+
+  <main class="admin-main">
+
+    <!-- ══════════ MENU ITEMS ══════════ -->
+    <section class="admin-panel active" id="panel-menu">
+      <div class="panel-head">
+        <h2>Menu Items</h2>
+        <button class="a-btn a-btn-primary" id="btnAddMenu">+ Add Item</button>
+      </div>
+      <div id="menuList" class="admin-list"><p class="empty">Loading…</p></div>
+      <div id="menuForm" class="a-form hidden"></div>
+    </section>
+
+    <!-- ══════════ CATEGORIES ══════════ -->
+    <section class="admin-panel" id="panel-categories">
+      <div class="panel-head">
+        <h2>Categories</h2>
+        <button class="a-btn a-btn-primary" id="btnAddCat">+ Add Category</button>
+      </div>
+      <div id="catList" class="admin-list"><p class="empty">Loading…</p></div>
+      <div id="catForm" class="a-form hidden"></div>
+    </section>
+
+    <!-- ══════════ FLAVORS ══════════ -->
+    <section class="admin-panel" id="panel-flavors">
+      <div class="panel-head">
+        <h2>Flavors</h2>
+        <button class="a-btn a-btn-primary" id="btnAddFlavor">+ Add Flavor</button>
+      </div>
+      <div id="flavorList" class="admin-list"><p class="empty">Loading…</p></div>
+      <div id="flavorForm" class="a-form hidden"></div>
+    </section>
+
+    <!-- ══════════ GALLERY ══════════ -->
+    <section class="admin-panel" id="panel-gallery">
+      <div class="panel-head">
+        <h2>Gallery</h2>
+        <button class="a-btn a-btn-primary" id="btnAddGallery">+ Add Image</button>
+      </div>
+      <div id="galleryList" class="admin-list admin-grid-list"><p class="empty">Loading…</p></div>
+      <div id="galleryForm" class="a-form hidden"></div>
+    </section>
+
+    <!-- ══════════ OPENING HOURS ══════════ -->
+    <section class="admin-panel" id="panel-hours">
+      <div class="panel-head"><h2>Opening Hours</h2></div>
+      <p class="hint">Set open/close for each day. The site shows Mon–Fri and Sat–Sun as combined cards.</p>
+      <div id="hoursList" class="admin-list"><p class="empty">Loading…</p></div>
+    </section>
+
+    <!-- ══════════ SETTINGS ══════════ -->
+    <section class="admin-panel" id="panel-settings">
+      <div class="panel-head">
+        <h2>Site Settings</h2>
+        <button class="a-btn a-btn-primary" id="btnSaveSettings">Save Settings</button>
+      </div>
+      <div id="settingsForm" class="a-form"><p class="empty">Loading…</p></div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
