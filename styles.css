@@ -1925,6 +1925,11 @@ section { padding: 100px 0; }
   color: rgba(255,255,255,0.4);
 }
 
+.footer-bottom .footer-dev {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* ══════════════════════════════════════════════════
    SCROLL-TO-TOP
    ══════════════════════════════════════════════════ */
