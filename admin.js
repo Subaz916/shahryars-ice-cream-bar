@@ -591,6 +591,21 @@ async function loadMenu() {
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  const REQ_WA_NUMBER = '923221945787';
+
+  function requestWaLink(r) {
+    const lines = [
+      `New website request: ${r.title || ''}`,
+      `Type: ${r.request_type || ''}`,
+      `Status: ${r.status || 'Pending'}`
+    ];
+    if (r.description) lines.push(`Details: ${r.description}`);
+    lines.push(`Requested: ${fmtDate(r.created_at)}`);
+    return 'https://wa.me/' + REQ_WA_NUMBER + '?text=' + encodeURIComponent(lines.join('\n'));
+  }
+
+  const waIcon = '<svg viewBox="0 0 32 32" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.26.6 4.46 1.72 6.41L3.2 28.8l6.56-1.72a12.76 12.76 0 0 0 6.24 1.6h.01c7.05 0 12.79-5.74 12.79-12.8s-5.74-12.68-12.79-12.68zm7.46 18.28c-.31.88-1.82 1.69-2.55 1.75-.66.06-1.55.09-2.48-.15-1.17-.31-3.29-1.13-5.66-3.4-2.25-2.16-3.57-4.38-3.9-5.1-.46-.97-.27-1.73.05-2.23.23-.36.69-.89 1.26-1.13.28-.11.6-.06.86.08.31.17.54.51.77.85.4.59.91 1.31 1.15 1.76.14.26.16.57.05.85-.66 1.69-1.4 1.72-1.22 2.01.26.5.87 1.53 1.6 2.32 1.07 1.16 2 1.49 2.27 1.63.16.08.36.13.54.05.27-.11.51-.4.83-.86.24-.35.55-.4.9-.29.35.11 2.18 1.03 2.56 1.22.37.19.62.28.71.44.1.16.08.93-.23 1.81z"/></svg>';
+
   async function loadRequests() {
     try {
       const reqs = await D.getSiteRequests();
@@ -607,6 +622,7 @@ async function loadMenu() {
           <div class="sub" style="margin-top:6px;">Requested on ${fmtDate(r.created_at)}</div>
         </div>
         <div class="g-actions">
+          <a class="a-btn a-btn-success" href="${requestWaLink(r)}" target="_blank" rel="noopener" aria-label="Share request on WhatsApp">${waIcon} WhatsApp</a>
           <select class="req-status" data-act="req-status" data-id="${r.id}" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-family:inherit;">
             <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
             <option value="In progress" ${r.status === 'In progress' ? 'selected' : ''}>In progress</option>
