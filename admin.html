@@ -71,6 +71,7 @@
     <button data-tab="flavors">🍨 Flavors</button>
     <button data-tab="gallery">📸 Gallery</button>
     <button data-tab="hours">🕐 Opening Hours</button>
+    <button data-tab="domain">🌐 Domain & Requests</button>
     <button data-tab="settings">⚙️ Site Settings</button>
   </nav>
 
@@ -80,8 +81,13 @@
     <section class="admin-panel active" id="panel-menu">
       <div class="panel-head">
         <h2>Menu Items</h2>
-        <button class="a-btn a-btn-primary" id="btnAddMenu">+ Add Item</button>
+        <div class="panel-actions">
+          <label class="check-row select-all-row"><input type="checkbox" id="menuSelectAll"> Select all</label>
+          <button class="a-btn a-btn-danger" id="btnDeleteSelected">🗑️ Delete Selected</button>
+          <button class="a-btn a-btn-primary" id="btnAddMenu">+ Add Item</button>
+        </div>
       </div>
+      <div id="menuFilter" class="filter-bar"></div>
       <div id="menuList" class="admin-list"><p class="empty">Loading…</p></div>
       <div id="menuForm" class="a-form hidden"></div>
     </section>
@@ -100,7 +106,11 @@
     <section class="admin-panel" id="panel-flavors">
       <div class="panel-head">
         <h2>Flavors</h2>
-        <button class="a-btn a-btn-primary" id="btnAddFlavor">+ Add Flavor</button>
+        <div class="panel-actions">
+          <label class="check-row select-all-row"><input type="checkbox" id="flavorSelectAll"> Select all</label>
+          <button class="a-btn a-btn-danger" id="btnDeleteSelectedFlavors">🗑️ Delete Selected</button>
+          <button class="a-btn a-btn-primary" id="btnAddFlavor">+ Add Flavor</button>
+        </div>
       </div>
       <div id="flavorList" class="admin-list"><p class="empty">Loading…</p></div>
       <div id="flavorForm" class="a-form hidden"></div>
@@ -121,6 +131,25 @@
       <div class="panel-head"><h2>Opening Hours</h2></div>
       <p class="hint">Set open/close for each day. The site shows Mon–Fri and Sat–Sun as combined cards.</p>
       <div id="hoursList" class="admin-list"><p class="empty">Loading…</p></div>
+    </section>
+
+    <!-- ══════════ DOMAIN & SITE REQUESTS ══════════ -->
+    <section class="admin-panel" id="panel-domain">
+      <div class="panel-head">
+        <h2>Domain & Website Requests</h2>
+        <button class="a-btn a-btn-primary" id="btnAddDomain">+ Add Domain</button>
+      </div>
+      <p class="hint">Track your domain(s), expiry, and auto-renewal. Warnings appear automatically when a domain is close to expiring.</p>
+      <div id="domainList" class="admin-list"><p class="empty">Loading…</p></div>
+      <div id="domainForm" class="a-form hidden"></div>
+
+      <div class="panel-head" style="margin-top:32px;">
+        <h2 style="margin:0">Request a Change</h2>
+        <button class="a-btn a-btn-success" id="btnAddRequest">+ New Request</button>
+      </div>
+      <p class="hint">Request any website change, adding a new page, or a domain renewal. Our team will pick it up.</p>
+      <div id="requestList" class="admin-list"><p class="empty">Loading…</p></div>
+      <div id="requestForm" class="a-form hidden"></div>
     </section>
 
     <!-- ══════════ SETTINGS ══════════ -->

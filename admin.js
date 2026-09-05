@@ -11,6 +11,8 @@
 
   let categories = [];
   let adminPin = '';
+  let menuFilterCat = 'all';
+  let menuCache = [];
 
   const VALID_PHONE = '03337254555';
   const SESSION_KEY = 'admin_authenticated';
@@ -157,19 +159,27 @@
   });
 
   /* ══════════════ MENU ITEMS ══════════════ */
-  async function loadMenu() {
+async function loadMenu() {
     try {
       const [items, cats] = await Promise.all([D.getMenuItems(), D.getCategories()]);
       categories = cats;
-      const list = $('#menuList');
-      if (!items.length) { list.innerHTML = '<p class="empty">No items yet. Click "Add Item".</p>'; return; }
-      const catName = (id) => { const c = cats.find(x => x.id === id); return c ? c.name : '—'; };
-      const catSlug = (id) => { const c = cats.find(x => x.id === id); return c ? c.slug : ''; };
-      list.innerHTML = items.map(it => {
-        const badge = it.is_ask_price ? 'border:1px dashed var(--gray);padding:3px 9px;border-radius:6px;color:var(--gray);' : '';
-        return `<div class="admin-card" data-id="${it.id}">
+      menuCache = items;
+      renderMenuList(items);
+    } catch (e) { $('#menuList').innerHTML = '<p class="empty">Failed to load menu.</p>'; toast('Failed to load menu', 'err'); }
+  }
+
+  function renderMenuList(items) {
+    const list = $('#menuList');
+    const catName = (id) => { const c = categories.find(x => x.id === id); return c ? c.name : '—'; };
+    const catSlug = (id) => { const c = categories.find(x => x.id === id); return c ? c.slug : ''; };
+    const catIcon = (id) => { const c = categories.find(x => x.id === id); return c ? (c.icon || '🍨') : '🍨'; };
+    const catSort = (id) => { const c = categories.find(x => x.id === id); return c ? (c.sort_order || 0) : 999; };
+    const card = (it) => {
+      const badge = it.is_ask_price ? 'border:1px dashed var(--gray);padding:3px 9px;border-radius:6px;color:var(--gray);' : '';
+      return `<div class="admin-card" data-id="${it.id}">
+          <input type="checkbox" class="menu-check" data-id="${it.id}" aria-label="Select ${esc(it.name)}">
           <div class="g-info">
-            <h4>${esc(it.icon ? it.icon + ' ' : (it.sort_order ? ('' + it.sort_order).padStart(2,'0') + ' ' : ''))}${esc(it.name)}</h4>
+            <h4>${esc(it.icon ? it.icon + ' ' : (it.sort_order ? ('' + it.sort_order).padStart(2, '0') + ' ' : ''))}${esc(it.name)}</h4>
             <div class="sub">${esc(catName(it.category_id))}${it.description ? ' · ' + esc(it.description) : ''}</div>
             <div class="sub" style="margin-top:6px;">
               <span class="badge badge-blue">${catSlug(it.category_id)}</span>
@@ -181,8 +191,36 @@
             <button class="a-btn a-btn-danger" data-act="del-menu" data-id="${it.id}">Delete</button>
           </div>
         </div>`;
-      }).join('');
-    } catch (e) { $('#menuList').innerHTML = '<p class="empty">Failed to load menu.</p>'; toast('Failed to load menu', 'err'); }
+    }; 
+    const selAll = $('#menuSelectAll');
+    if (selAll) selAll.checked = false;
+    if (!items.length) {
+      $('#menuFilter').innerHTML = '';
+      list.innerHTML = '<p class="empty">No items yet. Click "Add Item".</p>';
+      return;
+    }
+    $('#menuFilter').innerHTML = `<button class="filter-btn${menuFilterCat === 'all' ? ' active' : ''}" data-act="filter-menu" data-cat="all">All</button>` +
+      categories.map(c => `<button class="filter-btn${menuFilterCat === c.id ? ' active' : ''}" data-act="filter-menu" data-cat="${c.id}">${esc(c.icon || '🍨')} ${esc(c.name)}</button>`).join('');
+    const shown = menuFilterCat === 'all' || menuFilterCat === 'none' ? items : items.filter(it => it.category_id === menuFilterCat);
+    const grouped = [];
+    const byCat = {};
+    shown.forEach(it => {
+      const k = it.category_id || 'none';
+      (byCat[k] = byCat[k] || []).push(it);
+    });
+    const catIds = Object.keys(byCat).sort((a, b) => catSort(a) - catSort(b));
+    catIds.forEach(k => {
+      const sorted = byCat[k].slice().sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      grouped.push(`<div class="menu-group">
+        <div class="menu-group-head">
+          <span class="menu-group-icon">${esc(k === 'none' ? '🗂️' : catIcon(k))}</span>
+          <h4>${esc(k === 'none' ? 'Uncategorized' : catName(k))}</h4>
+          <span class="badge badge-blue">${sorted.length} item${sorted.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="admin-list">${sorted.map(card).join('')}</div>
+      </div>`);
+    });
+    list.innerHTML = grouped.join('');
   }
 
   function renderMenuForm(it) {
@@ -290,6 +328,7 @@
       const list = $('#flavorList');
       if (!flavors.length) { list.innerHTML = '<p class="empty">No flavors yet.</p>'; return; }
       list.innerHTML = flavors.map(f => `<div class="admin-card">
+        <input type="checkbox" class="flavor-check" data-id="${f.id}" aria-label="Select ${esc(f.name)}">
         <img class="thumb" src="${esc(f.image_url)}" alt="${esc(f.name)}">
         <div class="g-info"><h4>${esc(f.name)}</h4><div class="sub">${esc(f.tag || '')}</div><a class="sub" href="${esc(f.image_url)}" target="_blank" rel="noopener">${esc(f.image_url && f.image_url.length > 45 ? f.image_url.slice(0, 45) + '…' : f.image_url)}</a></div>
         <div class="g-actions">
@@ -297,6 +336,8 @@
           <button class="a-btn a-btn-danger" data-act="del-flavor" data-id="${f.id}">Delete</button>
         </div>
       </div>`).join('');
+      const selAll = $('#flavorSelectAll');
+      if (selAll) selAll.checked = false;
     } catch (e) { $('#flavorList').innerHTML = '<p class="empty">Failed to load.</p>'; }
   }
 
@@ -448,6 +489,179 @@
     return `${h}:${mm} ${ap}`;
   }
 
+  /* ══════════════ DOMAINS ══════════════ */
+  function daysUntil(dateStr) {
+    if (!dateStr) return null;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const exp = new Date(String(dateStr).slice(0, 10) + 'T00:00:00');
+    if (isNaN(exp)) return null;
+    return Math.round((exp - today) / 86400000);
+  }
+
+  function statusBadge(status) {
+    const s = String(status || 'Active');
+    if (/active/i.test(s)) return '<span class="badge badge-green">Active</span>';
+    if (/renew/i.test(s)) return '<span class="badge badge-orange">Renewal Pending</span>';
+    if (/expired/i.test(s)) return '<span class="badge badge-red">Expired</span>';
+    return `<span class="badge badge-blue">${esc(s)}</span>`;
+  }
+
+  async function loadDomains() {
+    try {
+      const domains = await D.getDomains();
+      const list = $('#domainList');
+      if (!domains.length) { list.innerHTML = '<p class="empty">No domains tracked yet. Click "Add Domain".</p>'; return; }
+      list.innerHTML = domains.map(d => {
+        const days = daysUntil(d.expiration_date);
+        let warn = '';
+        if (days !== null) {
+          if (days < 0) warn = `<div class="warn-banner red"><b>⚠ Domain expired</b> (${esc(d.expiration_date)}). Renew now to avoid downtime.</div>`;
+          else if (days <= 30) warn = `<div class="warn-banner red"><b>⚠ Expires in ${days} day${days === 1 ? '' : 's'}</b> (${esc(d.expiration_date)}). Please renew now.</div>`;
+          else if (days <= 90) warn = `<div class="warn-banner orange"><b>⚠ Expires in ${days} days</b> (${esc(d.expiration_date)}). Consider renewing soon.</div>`;
+        }
+        return `<div class="admin-card" style="align-items:flex-start;flex-direction:column;" data-id="${d.id}">
+          <div style="display:flex;align-items:center;gap:12px;width:100%;">
+            <span style="font-size:1.4rem">🌐</span>
+            <div class="g-info">
+              <h4>${esc(d.domain_name)}</h4>
+              <div class="sub">Expires ${esc(d.expiration_date || '—')} · Auto-renewal <b>${d.auto_renewal ? 'On' : 'Off'}</b></div>
+            </div>
+            ${statusBadge(d.status)}
+          </div>
+          ${warn}
+          <div class="g-actions" style="margin-top:4px;">
+            <button class="a-btn a-btn-success" data-act="renew-domain" data-id="${d.id}">🔄 Set to Renew</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch (e) { $('#domainList').innerHTML = '<p class="empty">Failed to load domains.</p>'; toast('Failed to load domains', 'err'); }
+  }
+
+  function renderDomainForm(d) {
+    const form = $('#domainForm');
+    form.classList.remove('hidden');
+    form.innerHTML = `<h3>${d ? 'Edit Domain' : 'Add Domain'}</h3>
+      <div class="grid-2">
+        <div class="a-field"><label>Domain Name *</label><input id="f-dom-name" value="${esc(d ? d.domain_name : '')}" placeholder="e.g. shahryaricecream.com"></div>
+        <div class="a-field"><label>Expiration Date</label><input id="f-dom-exp" type="date" value="${esc(d ? (d.expiration_date || '').slice(0, 10) : '')}"></div>
+      </div>
+      <div class="grid-2">
+        <div class="a-field"><label>Status</label><select id="f-dom-status">
+          <option value="Active" ${d && d.status === 'Active' ? 'selected' : ''}>Active</option>
+          <option value="Renewal Pending" ${d && d.status === 'Renewal Pending' ? 'selected' : ''}>Renewal Pending</option>
+          <option value="Expired" ${d && d.status === 'Expired' ? 'selected' : ''}>Expired</option>
+        </select></div>
+        <div class="check-row"><input type="checkbox" id="f-dom-auto" ${(!d || d.auto_renewal) ? 'checked' : ''}><label for="f-dom-auto">Auto-renewal enabled</label></div>
+      </div>
+      <div class="actions">
+        <button class="a-btn a-btn-ghost" id="btn-cancel-dom">Cancel</button>
+        <button class="a-btn a-btn-success" id="btn-save-dom">${d ? 'Save Changes' : 'Add Domain'}</button>
+      </div>`;
+    $('#btn-cancel-dom').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
+    $('#btn-save-dom').addEventListener('click', async () => {
+      const payload = {
+        domain_name: $('#f-dom-name').value.trim(),
+        expiration_date: $('#f-dom-exp').value || null,
+        status: $('#f-dom-status').value,
+        auto_renewal: $('#f-dom-auto').checked
+      };
+      if (!payload.domain_name) { toast('Domain name is required', 'err'); return; }
+      try {
+        if (d) { await D.update('domains', d.id, payload); toast('Domain updated', 'ok'); }
+        else { await D.insert('domains', payload); toast('Domain added', 'ok'); }
+        form.classList.add('hidden'); form.innerHTML = '';
+        loadDomains();
+      } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+    });
+  }
+
+  /* ══════════════ SITE CHANGE REQUESTS ══════════════ */
+  function reqBadge(status) {
+    const s = String(status || 'Pending');
+    if (/done/i.test(s)) return '<span class="badge badge-green">Done</span>';
+    if (/in progress|progress/i.test(s)) return '<span class="badge badge-blue">In progress</span>';
+    if (/reject/i.test(s)) return '<span class="badge badge-red">Rejected</span>';
+    return '<span class="badge badge-orange">Pending</span>';
+  }
+
+  function fmtDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  async function loadRequests() {
+    try {
+      const reqs = await D.getSiteRequests();
+      const list = $('#requestList');
+      if (!reqs.length) { list.innerHTML = '<p class="empty">No requests yet. Click "New Request" to ask for a website change or new page.</p>'; return; }
+      list.innerHTML = reqs.map(r => `<div class="admin-card request-card" data-id="${r.id}">
+        <div class="g-info">
+          <div class="req-head">
+            <h4 style="margin:0">${esc(r.title)}</h4>
+            <span class="badge badge-blue">${esc(r.request_type)}</span>
+            ${reqBadge(r.status)}
+          </div>
+          ${r.description ? `<div class="sub" style="white-space:pre-wrap">${esc(r.description)}</div>` : ''}
+          <div class="sub" style="margin-top:6px;">Requested on ${fmtDate(r.created_at)}</div>
+        </div>
+        <div class="g-actions">
+          <select class="req-status" data-act="req-status" data-id="${r.id}" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-family:inherit;">
+            <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="In progress" ${r.status === 'In progress' ? 'selected' : ''}>In progress</option>
+            <option value="Done" ${r.status === 'Done' ? 'selected' : ''}>Done</option>
+            <option value="Rejected" ${r.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+          </select>
+          <button class="a-btn a-btn-ghost" data-act="edit-req" data-id="${r.id}">Edit</button>
+          <button class="a-btn a-btn-danger" data-act="del-req" data-id="${r.id}">Delete</button>
+        </div>
+      </div>`).join('');
+    } catch (e) { $('#requestList').innerHTML = '<p class="empty">Failed to load requests.</p>'; }
+  }
+
+  function renderRequestForm(r) {
+    const form = $('#requestForm');
+    form.classList.remove('hidden');
+    form.innerHTML = `<h3>${r ? 'Edit Request' : 'New Request'}</h3>
+      <div class="grid-2">
+        <div class="a-field"><label>Request Type</label><select id="f-req-type">
+          <option value="Website change" ${r && r.request_type === 'Website change' ? 'selected' : ''}>Website change</option>
+          <option value="Add new page" ${r && r.request_type === 'Add new page' ? 'selected' : ''}>Add new page</option>
+          <option value="Domain renewal" ${r && r.request_type === 'Domain renewal' ? 'selected' : ''}>Domain renewal</option>
+          <option value="Other" ${r && r.request_type === 'Other' ? 'selected' : ''}>Other</option>
+        </select></div>
+        <div class="a-field"><label>Title *</label><input id="f-req-title" value="${esc(r ? r.title : '')}" placeholder="e.g. Add a new 'About Us' page"></div>
+      </div>
+      <div class="a-field"><label>Description / Details</label><textarea id="f-req-desc" rows="3" placeholder="Describe the change you need…">${esc(r ? r.description || '' : '')}</textarea></div>
+      ${r ? `<div class="a-field"><label>Status</label><select id="f-req-status">
+        <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
+        <option value="In progress" ${r.status === 'In progress' ? 'selected' : ''}>In progress</option>
+        <option value="Done" ${r.status === 'Done' ? 'selected' : ''}>Done</option>
+        <option value="Rejected" ${r.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+      </select></div>` : ''}
+      <div class="actions">
+        <button class="a-btn a-btn-ghost" id="btn-cancel-req">Cancel</button>
+        <button class="a-btn a-btn-success" id="btn-save-req">${r ? 'Save Changes' : 'Submit Request'}</button>
+      </div>`;
+    $('#btn-cancel-req').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
+    $('#btn-save-req').addEventListener('click', async () => {
+      const payload = {
+        request_type: $('#f-req-type').value,
+        title: $('#f-req-title').value.trim(),
+        description: $('#f-req-desc').value.trim()
+      };
+      if (r) payload.status = $('#f-req-status').value;
+      if (!payload.title) { toast('Title is required', 'err'); return; }
+      try {
+        if (r) { await D.update('site_requests', r.id, payload); toast('Request updated', 'ok'); }
+        else { await D.insert('site_requests', payload); toast('Request submitted', 'ok'); }
+        form.classList.add('hidden'); form.innerHTML = '';
+        loadRequests();
+      } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+    });
+  }
+
   /* ══════════════ SETTINGS ══════════════ */
   async function loadSettings() {
     try {
@@ -528,6 +742,10 @@
       const items = await D.getMenuItems();
       renderMenuForm(items.find(i => i.id === id));
     }
+    if (act === 'filter-menu') {
+      menuFilterCat = btn.dataset.cat;
+      renderMenuList(menuCache);
+    }
     if (act === 'del-menu') {
       if (confirm('Delete this menu item?')) { await D.remove('menu_items', id); toast('Item deleted', 'ok'); loadMenu(); }
     }
@@ -572,13 +790,94 @@
         toast('Hours saved', 'ok');
       } catch (err) { toast('Save failed: ' + (err.message || err), 'err'); }
     }
+    /* DOMAINS */
+    if (act === 'edit-domain') {
+      const domains = await D.getDomains();
+      renderDomainForm(domains.find(d => d.id === id));
+    }
+    if (act === 'del-domain') {
+      if (confirm('Delete this domain record?')) { await D.remove('domains', id); toast('Domain deleted', 'ok'); loadDomains(); }
+    }
+    if (act === 'renew-domain') {
+      if (confirm('Mark this domain as set to renew? (status → Renewal Pending, auto-renewal → On)')) {
+        await D.update('domains', id, { status: 'Renewal Pending', auto_renewal: true });
+        toast('Set to renew! Our team will contact you very soon.', 'ok');
+        loadDomains();
+      }
+    }
+    /* REQUESTS */
+    if (act === 'edit-req') {
+      const reqs = await D.getSiteRequests();
+      renderRequestForm(reqs.find(r => r.id === id));
+    }
+    if (act === 'del-req') {
+      if (confirm('Delete this request?')) { await D.remove('site_requests', id); toast('Request deleted', 'ok'); loadRequests(); }
+    }
+    if (act === 'req-status') {
+      await D.update('site_requests', id, { status: btn.value });
+      toast('Status updated', 'ok');
+    }
   });
 
   /* ── Add buttons ── */
   $('#btnAddMenu').addEventListener('click', () => { loadMenu(); renderMenuForm(null); $('#menuForm').scrollIntoView({ behavior: 'smooth' }); });
+
+  /* ── Multi-select delete ── */
+  function countMenuSelected() {
+    return Array.from(document.querySelectorAll('.menu-check:checked')).length;
+  }
+  $('#menuSelectAll').addEventListener('change', () => {
+    const on = $('#menuSelectAll').checked;
+    document.querySelectorAll('.menu-check').forEach(c => c.checked = on);
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target.classList && e.target.classList.contains('menu-check')) {
+      const total = document.querySelectorAll('.menu-check').length;
+      const checked = countMenuSelected();
+      $('#menuSelectAll').checked = total > 0 && checked === total;
+    }
+  });
+  $('#btnDeleteSelected').addEventListener('click', async () => {
+    const checks = Array.from(document.querySelectorAll('.menu-check:checked'));
+    if (!checks.length) { toast('Select items to delete', 'err'); return; }
+    if (!confirm(`Delete ${checks.length} item(s)?`)) return;
+    try {
+      await Promise.all(checks.map(c => D.remove('menu_items', c.dataset.id)));
+      toast(checks.length + ' item(s) deleted', 'ok');
+      loadMenu();
+    } catch (e) { toast('Delete failed: ' + (e.message || e), 'err'); }
+  });
+
+  /* ── Multi-select delete (flavors) ── */
+  function countFlavorSelected() {
+    return Array.from(document.querySelectorAll('.flavor-check:checked')).length;
+  }
+  $('#flavorSelectAll').addEventListener('change', () => {
+    const on = $('#flavorSelectAll').checked;
+    document.querySelectorAll('.flavor-check').forEach(c => c.checked = on);
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target.classList && e.target.classList.contains('flavor-check')) {
+      const total = document.querySelectorAll('.flavor-check').length;
+      const checked = countFlavorSelected();
+      $('#flavorSelectAll').checked = total > 0 && checked === total;
+    }
+  });
+  $('#btnDeleteSelectedFlavors').addEventListener('click', async () => {
+    const checks = Array.from(document.querySelectorAll('.flavor-check:checked'));
+    if (!checks.length) { toast('Select flavors to delete', 'err'); return; }
+    if (!confirm(`Delete ${checks.length} flavor(s)?`)) return;
+    try {
+      await Promise.all(checks.map(c => D.remove('flavors', c.dataset.id)));
+      toast(checks.length + ' flavor(s) deleted', 'ok');
+      loadFlavors();
+    } catch (e) { toast('Delete failed: ' + (e.message || e), 'err'); }
+  });
   $('#btnAddCat').addEventListener('click', () => { renderCatForm(null); $('#catForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddFlavor').addEventListener('click', () => { renderFlavorForm(null); $('#flavorForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddGallery').addEventListener('click', () => { renderGalleryForm(null); $('#galleryForm').scrollIntoView({ behavior: 'smooth' }); });
+  $('#btnAddDomain').addEventListener('click', () => { renderDomainForm(null); $('#domainForm').scrollIntoView({ behavior: 'smooth' }); });
+  $('#btnAddRequest').addEventListener('click', () => { renderRequestForm(null); $('#requestForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnSaveSettings').addEventListener('click', saveSettings);
 
   function initAdmin() {
@@ -589,7 +888,7 @@
       } catch (e) {
         setConn(false, 'Check SQL schema');
       }
-      loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadHours(); loadSettings();
+      loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadHours(); loadDomains(); loadRequests(); loadSettings();
     })();
   }
 

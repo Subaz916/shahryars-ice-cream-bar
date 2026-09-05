@@ -77,6 +77,28 @@ create table if not exists public.opening_hours (
   is_open  boolean default true
 );
 
+-- ──────────────────────────── DOMAINS ────────────────────────────
+create table if not exists public.domains (
+  id             uuid primary key default gen_random_uuid(),
+  domain_name    text not null,
+  status         text default 'Active',      -- Active / Renewal Pending / Expired
+  expiration_date date,
+  auto_renewal   boolean default true,
+  updated_at     timestamptz default now()
+);
+
+-- ──────────────────────────── SITE REQUESTS (support) ────────────────────────────
+-- Admin can request any website change, adding a new page, or a domain renewal.
+create table if not exists public.site_requests (
+  id           uuid primary key default gen_random_uuid(),
+  request_type text default 'Website change', -- Website change / Add new page / Domain renewal / Other
+  title        text not null,
+  description  text default '',
+  status       text default 'Pending',       -- Pending / In progress / Done / Rejected
+  created_at   timestamptz default now(),
+  updated_at   timestamptz default now()
+);
+
 -- ──────────────────────────── RLS (open anon access for this project) ────────────────────────────
 alter table public.settings     enable row level security;
 alter table public.categories   enable row level security;
@@ -84,6 +106,8 @@ alter table public.menu_items   enable row level security;
 alter table public.flavors      enable row level security;
 alter table public.gallery      enable row level security;
 alter table public.opening_hours enable row level security;
+alter table public.domains      enable row level security;
+alter table public.site_requests enable row level security;
 
 -- Allow full read + write for anon & authenticated (simple open setup)
 drop policy if exists "open access settings"      on public.settings;
@@ -92,6 +116,8 @@ drop policy if exists "open access menu"          on public.menu_items;
 drop policy if exists "open access flavors"       on public.flavors;
 drop policy if exists "open access gallery"       on public.gallery;
 drop policy if exists "open access hours"         on public.opening_hours;
+drop policy if exists "open access domains"       on public.domains;
+drop policy if exists "open access requests"      on public.site_requests;
 
 create policy "open access settings"      on public.settings      for all using (true) with check (true);
 create policy "open access categories"    on public.categories    for all using (true) with check (true);
@@ -99,6 +125,8 @@ create policy "open access menu"          on public.menu_items    for all using 
 create policy "open access flavors"       on public.flavors       for all using (true) with check (true);
 create policy "open access gallery"       on public.gallery       for all using (true) with check (true);
 create policy "open access hours"         on public.opening_hours for all using (true) with check (true);
+create policy "open access domains"       on public.domains       for all using (true) with check (true);
+create policy "open access requests"      on public.site_requests for all using (true) with check (true);
 
 -- ──────────────────────────── SEED: settings row ────────────────────────────
 insert into public.settings (id, brand_name, tagline, hero_pill, hero_desc, phone, whatsapp, address, rating, reviews)
@@ -170,4 +198,9 @@ insert into public.opening_hours (day, label, open, close, is_open) values
   (5, 'Fri', '12:00 PM', '12:00 AM', true),
   (6, 'Sat', '12:00 PM', '12:00 AM', true),
   (0, 'Sun', '12:00 PM', '12:00 AM', true)
+on conflict do nothing;
+
+-- ──────────────────────────── SEED: domain ────────────────────────────
+insert into public.domains (domain_name, status, expiration_date, auto_renewal)
+values ('shahryaricecream.com', 'Active', '2027-09-04', true)
 on conflict do nothing;

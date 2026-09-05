@@ -48,6 +48,18 @@ window.DB = (function () {
     return data || [];
   }
 
+  async function getDomains() {
+    const { data, error } = await q('domains', 'expiration_date');
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function getSiteRequests() {
+    const { data, error } = await sb().from('site_requests').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
   /* ── WRITE ── */
   async function insert(table, row) {
     const { data, error } = await sb().from(table).insert(row).select().single();
@@ -74,6 +86,7 @@ window.DB = (function () {
 
   return {
     getSettings, getCategories, getMenuItems, getFlavors, getGallery, getOpeningHours,
+    getDomains, getSiteRequests,
     insert, update, remove, setSettings
   };
 })();
