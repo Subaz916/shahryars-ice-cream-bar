@@ -2082,6 +2082,7 @@ section { padding: 100px 0; }
   /* Flavors */
   .flavors-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .flavor-top { height: 130px; }
+  .flavors-page .flavor-scoop { object-fit: cover; object-position: center; }
   .flavor-info { padding: 14px 16px 18px; }
   .flavor-info h4 { font-size: 0.95rem; }
   .flavor-info .flavor-tag { font-size: 0.72rem; }
@@ -2156,6 +2157,7 @@ section { padding: 100px 0; }
 
   .flavors-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .flavor-top { height: 110px; }
+  .flavors-page .flavor-scoop { object-fit: cover; object-position: center; }
   .flavor-info { padding: 10px 12px 14px; }
   .flavor-info h4 { font-size: 0.88rem; }
   .flavor-info .flavor-tag { font-size: 0.68rem; }
@@ -2250,6 +2252,7 @@ section { padding: 100px 0; }
   /* Flavors */
   .flavors-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .flavor-top { height: 100px; }
+  .flavors-page .flavor-scoop { object-fit: cover; object-position: center; }
   .flavor-info { padding: 8px 10px 12px; }
   .flavor-info h4 { font-size: 0.82rem; }
   .flavor-info .flavor-tag { font-size: 0.64rem; display: none; }
@@ -2322,6 +2325,7 @@ section { padding: 100px 0; }
 
   .flavors-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .flavor-top { height: 90px; }
+  .flavors-page .flavor-scoop { object-fit: cover; object-position: center; }
 
   .menu-card { padding: 12px 14px; }
   .menu-card .mc-name { font-size: 0.8rem; }
