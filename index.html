@@ -601,12 +601,28 @@
     </button>
   </div>
 
+  <!-- ════════════════ POPUP (announcement modal) ════════════════ -->
+  <div class="popup-overlay" id="popupOverlay" hidden>
+    <div class="popup-modal" id="popupModal" role="dialog" aria-modal="true" aria-label="Announcement">
+      <button class="popup-close" id="popupClose" aria-label="Close announcement">✕</button>
+      <div class="popup-img-wrap">
+        <img class="popup-img" id="popupImg" src="" alt="">
+        <a class="popup-cta" id="popupLink" target="_blank" rel="noopener" hidden>Learn more →</a>
+      </div>
+      <div class="popup-body">
+        <h3 class="popup-title" id="popupTitle"></h3>
+      </div>
+      <div class="popup-dots" id="popupDots"></div>
+    </div>
+  </div>
+
   <!-- supabase-js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-client.js"></script>
   <script src="data.js"></script>
   <script src="site-home.js"></script>
+  <script src="site-popup.js"></script>
   <!-- JS -->
   <script src="script.js"></script>
 </body>

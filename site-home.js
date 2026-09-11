@@ -37,6 +37,16 @@
     setLogo(s);
     setFavicon(s);
 
+    // Gallery section toggle
+    const gallerySection = $('#gallery');
+    const galleryLinks = $$('a[href="#gallery"]');
+    const hidden = (s.gallery_enabled === false);
+    if (gallerySection) gallerySection.style.display = hidden ? 'none' : '';
+    galleryLinks.forEach(a => {
+      const target = a.closest('li') || a; // navbar wraps in <li>; mobile menu & footer use the <a> directly
+      target.style.display = hidden ? 'none' : '';
+    });
+
     if (s.hero_pill) {
       const pill = $('.hero-pill');
       if (pill) {

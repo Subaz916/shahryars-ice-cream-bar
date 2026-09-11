@@ -7,6 +7,10 @@
   const container = document.getElementById('menuBlocks');
   if (!container) return;
 
+  const settings = (window.DB && window.DB.getSettings)
+    ? await window.DB.getSettings().catch(() => null)
+    : null;
+
   let categories = [];
   let items = [];
 
@@ -16,6 +20,8 @@
     console.error('[menu] failed to load:', e);
     return;
   }
+
+  if (window.db && window.db.applyGalleryToggle) window.db.applyGalleryToggle(settings);
 
   if (!categories.length) return;
 

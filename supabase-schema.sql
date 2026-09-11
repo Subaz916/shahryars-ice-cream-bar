@@ -17,6 +17,7 @@ create table if not exists public.settings (
   address       text not null default 'Mahdi Shah Bazar, Quaid-e-Azam Rd, Gojra, 56000, Pakistan',
   rating        numeric default 4.4,
   reviews       int default 705,
+  gallery_enabled boolean default true,     -- show/hide the Gallery section on the website
   hero_image    text default null,
   og_image      text default null,
   logo_url      text default null,

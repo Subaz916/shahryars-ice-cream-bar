@@ -422,6 +422,61 @@ async function loadMenu() {
     });
   }
 
+  /* ══════════════ POPUPS ══════════════ */
+  async function loadPopups() {
+    try {
+      const popups = await D.getPopups();
+      const list = $('#popupList');
+      if (!popups.length) { list.innerHTML = '<p class="empty">No popups yet. Click "Add Popup".</p>'; return; }
+      list.innerHTML = popups.map(p => `<div class="admin-card">
+        <img class="thumb" src="${esc(p.image_url)}" alt="${esc(p.caption || 'Popup')}">
+        <div class="g-info"><h4>${esc(p.caption || 'Untitled')}</h4>
+          <div class="sub">${p.link ? `<a class="sub" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.link.length > 40 ? p.link.slice(0, 40) + '…' : p.link)}</a>` : 'No link'}</div>
+          <div style="margin-top:6px;">${p.enabled ? '<span class="badge badge-green">Visible on site</span>' : '<span class="badge badge-gray">Hidden</span>'}</div>
+        </div>
+        <div class="g-actions">
+          <button class="a-btn ${p.enabled ? 'a-btn-ghost' : 'a-btn-success'}" data-act="toggle-popup" data-id="${p.id}">${p.enabled ? 'Disable' : 'Enable'}</button>
+          <button class="a-btn a-btn-ghost" data-act="edit-popup" data-id="${p.id}">Edit</button>
+          <button class="a-btn a-btn-danger" data-act="del-popup" data-id="${p.id}">Delete</button>
+        </div>
+      </div>`).join('');
+    } catch (e) { $('#popupList').innerHTML = '<p class="empty">Failed to load.</p>'; }
+  }
+
+  function renderPopupForm(p) {
+    const form = $('#popupForm');
+    form.classList.remove('hidden');
+    form.innerHTML = `<h3>${p ? 'Edit Popup' : 'Add Popup'}</h3>
+      <div class="a-field"><label>Image URL *</label><input id="f-pop-img" value="${esc(p ? p.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Paste a direct image URL. Wide images (e.g. 1400×600) look best.</small></div>
+      <div class="a-field"><label>Caption (short title)</label><input id="f-pop-cap" value="${esc(p ? p.caption || '' : '')}" placeholder="e.g. Welcome to Shahryar's Ice Cream Bar"></div>
+      <div class="grid-2">
+        <div class="a-field"><label>Link (optional)</label><input id="f-pop-link" value="${esc(p ? p.link || '' : '')}" placeholder="https://..."></div>
+        <div class="a-field"><label>Sort Order</label><input id="f-pop-sort" type="number" value="${p ? (p.sort_order || 0) : 0}"></div>
+      </div>
+      <div class="check-row"><input type="checkbox" id="f-pop-enabled" ${!p || p.enabled ? 'checked' : ''}><label for="f-pop-enabled">Show this popup on the website</label></div>
+      <div class="actions">
+        <button class="a-btn a-btn-ghost" id="btn-cancel-pop">Cancel</button>
+        <button class="a-btn a-btn-success" id="btn-save-pop">${p ? 'Save Changes' : 'Add Popup'}</button>
+      </div>`;
+    $('#btn-cancel-pop').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
+    $('#btn-save-pop').addEventListener('click', async () => {
+      const payload = {
+        image_url: $('#f-pop-img').value.trim(),
+        caption: $('#f-pop-cap').value.trim(),
+        link: $('#f-pop-link').value.trim(),
+        enabled: $('#f-pop-enabled').checked,
+        sort_order: parseInt($('#f-pop-sort').value, 10) || 0
+      };
+      if (!payload.image_url) { toast('Image URL is required', 'err'); return; }
+      try {
+        if (p) { await D.update('popups', p.id, payload); toast('Popup updated', 'ok'); }
+        else { await D.insert('popups', payload); toast('Popup added', 'ok'); }
+        form.classList.add('hidden'); form.innerHTML = '';
+        loadPopups();
+      } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+    });
+  }
+
   /* ══════════════ OPENING HOURS ══════════════ */
   async function loadHours() {
     try {
@@ -705,6 +760,13 @@ async function loadMenu() {
           <div class="a-field"><label>Title Line 2 (highlight)</label><input id="s-t2" value="${esc(num(s.hero_title_2, ''))}"></div>
         </div>
         <div class="a-field"><label>Hero Description</label><textarea id="s-herodesc" rows="2">${esc(num(s.hero_desc, ''))}</textarea></div>
+        <h3>Sections Visibility</h3>
+        <label class="toggle-row">
+          <input type="checkbox" id="s-gallery-enabled" ${s.gallery_enabled !== false ? 'checked' : ''}>
+          <span class="toggle-track"></span>
+          <span class="toggle-label">Show Gallery section on website</span>
+          <span class="toggle-state ${s.gallery_enabled !== false ? 'on' : 'off'}">${s.gallery_enabled !== false ? 'On' : 'Off'}</span>
+        </label>
         <h3>Contact</h3>
         <div class="grid-2">
           <div class="a-field"><label>Phone</label><input id="s-phone" value="${esc(num(s.phone, ''))}"></div>
@@ -718,6 +780,15 @@ async function loadMenu() {
           <div class="a-field"><label>Google Rating</label><input id="s-rating" type="number" step="0.1" value="${esc(num(s.rating, 4.4))}"></div>
           <div class="a-field"><label>Review Count</label><input id="s-reviews" type="number" value="${esc(num(s.reviews, 705))}"></div>
         </div>`;
+    const galToggle = $('#s-gallery-enabled');
+    if (galToggle) {
+      galToggle.addEventListener('change', () => {
+        const state = galToggle.closest('.toggle-row').querySelector('.toggle-state');
+        state.classList.toggle('on', galToggle.checked);
+        state.classList.toggle('off', !galToggle.checked);
+        state.textContent = galToggle.checked ? 'On' : 'Off';
+      });
+    }
     } catch (e) { $('#settingsForm').innerHTML = '<p class="empty">Failed to load settings.</p>'; }
   }
 
@@ -734,6 +805,7 @@ async function loadMenu() {
         hero_title_1: val('s-t1'),
         hero_title_2: val('s-t2'),
         hero_desc: val('s-herodesc'),
+        gallery_enabled: $('#s-gallery-enabled').checked,
         phone: val('s-phone'),
         whatsapp: val('s-wa'),
         address: val('s-address'),
@@ -788,6 +860,23 @@ async function loadMenu() {
     }
     if (act === 'del-gallery') {
       if (confirm('Delete this gallery image?')) { await D.remove('gallery', id); toast('Image deleted', 'ok'); loadGallery(); }
+    }
+    /* POPUPS */
+    if (act === 'toggle-popup') {
+      const popups = await D.getPopups();
+      const p = popups.find(x => x.id === id);
+      if (p) {
+        await D.update('popups', id, { enabled: !p.enabled });
+        toast(p.enabled ? 'Popup hidden from site' : 'Popup is now visible', 'ok');
+        loadPopups();
+      }
+    }
+    if (act === 'edit-popup') {
+      const popups = await D.getPopups();
+      renderPopupForm(popups.find(x => x.id === id));
+    }
+    if (act === 'del-popup') {
+      if (confirm('Delete this popup?')) { await D.remove('popups', id); toast('Popup deleted', 'ok'); loadPopups(); }
     }
     /* HOURS */
     if (act === 'save-hours-block') {
@@ -892,6 +981,7 @@ async function loadMenu() {
   $('#btnAddCat').addEventListener('click', () => { renderCatForm(null); $('#catForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddFlavor').addEventListener('click', () => { renderFlavorForm(null); $('#flavorForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddGallery').addEventListener('click', () => { renderGalleryForm(null); $('#galleryForm').scrollIntoView({ behavior: 'smooth' }); });
+  $('#btnAddPopup').addEventListener('click', () => { renderPopupForm(null); $('#popupForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddDomain').addEventListener('click', () => { renderDomainForm(null); $('#domainForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddRequest').addEventListener('click', () => { renderRequestForm(null); $('#requestForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnSaveSettings').addEventListener('click', saveSettings);
@@ -904,7 +994,7 @@ async function loadMenu() {
       } catch (e) {
         setConn(false, 'Check SQL schema');
       }
-      loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadHours(); loadDomains(); loadRequests(); loadSettings();
+      loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadPopups(); loadHours(); loadDomains(); loadRequests(); loadSettings();
     })();
   }
 

@@ -35,7 +35,19 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  window.db = { parseTags, esc };
+  /* ── Hide "Gallery" nav/footer links when the gallery section is disabled ── */
+  function applyGalleryToggle(s) {
+    if (!s) return;
+    const hidden = (s.gallery_enabled === false);
+    document.querySelectorAll('a[href$="#gallery"]').forEach(a => {
+      const target = a.closest('li') || a;
+      target.style.display = hidden ? 'none' : '';
+    });
+    const gallerySection = document.getElementById('gallery');
+    if (gallerySection) gallerySection.style.display = hidden ? 'none' : '';
+  }
+
+  window.db = { parseTags, esc, applyGalleryToggle };
 
   console.log('[supabase] client ready');
 })();

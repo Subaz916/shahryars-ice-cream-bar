@@ -48,6 +48,12 @@ window.DB = (function () {
     return data || [];
   }
 
+  async function getPopups() {
+    const { data, error } = await q('popups', 'sort_order');
+    if (error) throw error;
+    return data || [];
+  }
+
   async function getDomains() {
     const { data, error } = await q('domains', 'expiration_date');
     if (error) throw error;
@@ -86,6 +92,7 @@ window.DB = (function () {
 
   return {
     getSettings, getCategories, getMenuItems, getFlavors, getGallery, getOpeningHours,
+    getPopups,
     getDomains, getSiteRequests,
     insert, update, remove, setSettings
   };

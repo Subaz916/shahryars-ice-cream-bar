@@ -24,6 +24,7 @@
   function applySettings(s) {
     setLogo(s);
     setFavicon(s);
+    if (window.db && window.db.applyGalleryToggle) window.db.applyGalleryToggle(s);
   }
 
   function setLogo(s) {
