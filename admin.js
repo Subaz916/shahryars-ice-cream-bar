@@ -851,7 +851,10 @@ async function loadMenu() {
       renderFlavorForm(flavors.find(f => f.id === id));
     }
     if (act === 'del-flavor') {
-      if (confirm('Delete this flavor?')) { await D.remove('flavors', id); toast('Flavor deleted', 'ok'); loadFlavors(); }
+      if (confirm('Delete this flavor?')) {
+        try { await D.remove('flavors', id); toast('Flavor deleted', 'ok'); loadFlavors(); }
+        catch (e) { toast('Delete failed: ' + (e.message || e), 'err'); }
+      }
     }
     /* GALLERY */
     if (act === 'edit-gallery') {
@@ -979,7 +982,7 @@ async function loadMenu() {
     } catch (e) { toast('Delete failed: ' + (e.message || e), 'err'); }
   });
   $('#btnAddCat').addEventListener('click', () => { renderCatForm(null); $('#catForm').scrollIntoView({ behavior: 'smooth' }); });
-  $('#btnAddFlavor').addEventListener('click', () => { renderFlavorForm(null); $('#flavorForm').scrollIntoView({ behavior: 'smooth' }); });
+  $('#btnAddFlavor').addEventListener('click', () => { loadFlavors(); renderFlavorForm(null); $('#flavorForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddGallery').addEventListener('click', () => { renderGalleryForm(null); $('#galleryForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddPopup').addEventListener('click', () => { renderPopupForm(null); $('#popupForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddDomain').addEventListener('click', () => { renderDomainForm(null); $('#domainForm').scrollIntoView({ behavior: 'smooth' }); });
