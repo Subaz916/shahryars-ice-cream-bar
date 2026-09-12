@@ -29,6 +29,12 @@
 * { box-sizing: border-box; scroll-behavior: smooth; }
 html { -webkit-tap-highlight-color: transparent; }
 
+@supports (contain: layout) {
+  .admin-card, .menu-group, .hours-block, .a-form, .login-box {
+    contain: layout style;
+  }
+}
+
 body {
   margin: 0;
   font-family: 'DM Sans', -apple-system, sans-serif;
@@ -751,6 +757,158 @@ body::after {
   .login-icon { width: 56px; height: 56px; font-size: 1.5rem; }
 }
 
+/* ── MOBILE PERFORMANCE FIX ── */
+@media (max-width: 640px) {
+  /* Kill heavy backdrop-filter on mobile - #1 lag cause */
+  body::before { display: none; }
+  body::after { display: none; }
+  .admin-header {
+    background: rgba(10, 14, 26, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .admin-tabs button {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255,255,255,0.07);
+  }
+  .admin-tabs button.active {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .admin-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255,255,255,0.06);
+    will-change: auto;
+    transform: none;
+  }
+  .admin-card:hover {
+    transform: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .admin-card::before { display: none; }
+  .a-form {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255,255,255,0.06);
+  }
+  .a-form::before { display: none; }
+  .a-field input,
+  .a-field select,
+  .a-field textarea {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255,255,255,0.06);
+  }
+  .a-btn-ghost {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .a-btn-danger {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .a-btn-link {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .conn-badge {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .menu-group {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255,255,255,0.06);
+  }
+  .menu-group::before { display: none; }
+  .filter-btn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .hours-block {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255,255,255,0.06);
+  }
+  .hours-block::before { display: none; }
+  .hours-row input {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .empty {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .warn-banner {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .save-pill {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .toggle-track {
+    transition: background 0.2s ease;
+  }
+  .toggle-track::after {
+    transition: transform 0.2s ease;
+  }
+  .toast {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(10, 14, 26, 0.92);
+  }
+  .admin-login-overlay {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .login-box {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.07);
+  }
+  .login-box::before { display: none; }
+  .login-icon {
+    box-shadow: 0 0 20px rgba(94,176,255,0.2);
+  }
+  /* Simplify shadows */
+  .admin-header { box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+  .admin-card { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .menu-group { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .hours-block { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .a-form { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  /* Remove hover glows on mobile */
+  .hours-block:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.08);
+  }
+  /* Reduce animation complexity */
+  .admin-panel.active {
+    animation: panelFadeIn 0.2s ease;
+  }
+  .menu-group {
+    animation: none;
+  }
+  /* Remove gradient text on mobile (expensive) */
+  .panel-head h2,
+  .a-form h3,
+  .login-box h2,
+  .admin-title h1 {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    background-clip: unset;
+    color: #fff;
+  }
+  /* Remove shine gradient from buttons */
+  .a-btn::before { display: none; }
+  /* Simpler transitions */
+  .a-btn { transition: background 0.15s ease, box-shadow 0.15s ease; }
+  .a-btn:active { transform: scale(0.98); }
+}
+
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 640px) {
 
@@ -1269,6 +1427,11 @@ body::after {
   .login-step .a-btn-ghost {
     min-height: 44px;
   }
+
+  /* Simplify login animations on mobile */
+  .admin-login-overlay { animation: none; }
+  .login-box { animation: none; }
+  .login-step { animation: none; }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideUp {
