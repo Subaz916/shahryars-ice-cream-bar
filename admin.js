@@ -6,6 +6,36 @@
   const D = window.DB;
   const esc = window.db ? window.db.esc : ((x) => String(x == null ? '' : x));
 
+  async function uploadToStorage(file, folder) {
+    const name = folder + '-' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '');
+    const { error } = await window.sb.storage.from('images').upload(name, file, { cacheControl: '3600', upsert: true });
+    if (error) throw error;
+    const { data: pub } = window.sb.storage.from('images').getPublicUrl(name);
+    return pub.publicUrl;
+  }
+
+  function bindImageUpload(btnId, fileId, inputId, folder, label) {
+    const btn = $('#' + btnId);
+    const file = $('#' + fileId);
+    const input = $('#' + inputId);
+    if (!btn || !file || !input) return;
+    btn.addEventListener('click', () => file.click());
+    file.addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      try {
+        toast('Uploading ' + label + '…');
+        const url = await uploadToStorage(f, folder);
+        input.value = url;
+        toast(label + ' uploaded — saved as URL', 'ok');
+      } catch (err) {
+        toast('Upload failed: ' + (err.message || err) + ' — is the storage bucket "images" created?', 'err');
+      } finally {
+        file.value = '';
+      }
+    });
+  }
+
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -350,11 +380,18 @@ async function loadMenu() {
         <div class="a-field"><label>Sort Order</label><input id="f-fl-sort" type="number" value="${f ? (f.sort_order || 0) : 0}"></div>
       </div>
       <div class="a-field"><label>Tag / Short description</label><input id="f-fl-tag" value="${esc(f ? f.tag || '' : '')}" placeholder="Rich & nutty green pistachio"></div>
-      <div class="a-field"><label>Image URL *</label><input id="f-fl-img" value="${esc(f ? f.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Paste a direct image URL.</small></div>
+      <div class="a-field"><label>Image URL *</label>
+        <div class="upload-row"><div class="upload-col">
+          <input type="file" id="f-fl-img-file" accept="image/*" hidden>
+          <button type="button" class="a-btn a-btn-ghost" id="btn-fl-img-upload">📤 Upload Image</button>
+        </div></div>
+        <input id="f-fl-img" value="${esc(f ? f.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Uploaded images are saved below as a URL, or paste a direct image URL.</small>
+      </div>
       <div class="actions">
         <button class="a-btn a-btn-ghost" id="btn-cancel-fl">Cancel</button>
         <button class="a-btn a-btn-success" id="btn-save-fl">${f ? 'Save Changes' : 'Add Flavor'}</button>
       </div>`;
+    bindImageUpload('btn-fl-img-upload', 'f-fl-img-file', 'f-fl-img', 'flavor', 'Image');
     $('#btn-cancel-fl').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
     $('#btn-save-fl').addEventListener('click', async () => {
       const payload = {
@@ -394,7 +431,13 @@ async function loadMenu() {
     const form = $('#galleryForm');
     form.classList.remove('hidden');
     form.innerHTML = `<h3>${g ? 'Edit Gallery Image' : 'Add Gallery Image'}</h3>
-      <div class="a-field"><label>Image URL *</label><input id="f-gal-img" value="${esc(g ? g.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Paste a direct image URL.</small></div>
+      <div class="a-field"><label>Image URL *</label>
+      <div class="upload-row"><div class="upload-col">
+        <input type="file" id="f-gal-img-file" accept="image/*" hidden>
+        <button type="button" class="a-btn a-btn-ghost" id="btn-gal-img-upload">📤 Upload Image</button>
+      </div></div>
+      <input id="f-gal-img" value="${esc(g ? g.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Uploaded images are saved below as a URL, or paste a direct image URL.</small>
+    </div>
       <div class="grid-2">
         <div class="a-field"><label>Caption</label><input id="f-gal-cap" value="${esc(g ? g.caption || '' : '')}" placeholder="e.g. Flavor Display"></div>
         <div class="a-field"><label>Sort Order</label><input id="f-gal-sort" type="number" value="${g ? (g.sort_order || 0) : 0}"></div>
@@ -404,6 +447,7 @@ async function loadMenu() {
         <button class="a-btn a-btn-ghost" id="btn-cancel-gal">Cancel</button>
         <button class="a-btn a-btn-success" id="btn-save-gal">${g ? 'Save Changes' : 'Add Image'}</button>
       </div>`;
+    bindImageUpload('btn-gal-img-upload', 'f-gal-img-file', 'f-gal-img', 'gallery', 'Image');
     $('#btn-cancel-gal').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
     $('#btn-save-gal').addEventListener('click', async () => {
       const payload = {
@@ -447,7 +491,13 @@ async function loadMenu() {
     const form = $('#popupForm');
     form.classList.remove('hidden');
     form.innerHTML = `<h3>${p ? 'Edit Popup' : 'Add Popup'}</h3>
-      <div class="a-field"><label>Image URL *</label><input id="f-pop-img" value="${esc(p ? p.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Paste a direct image URL. Wide images (e.g. 1400×600) look best.</small></div>
+      <div class="a-field"><label>Image URL *</label>
+      <div class="upload-row"><div class="upload-col">
+        <input type="file" id="f-pop-img-file" accept="image/*" hidden>
+        <button type="button" class="a-btn a-btn-ghost" id="btn-pop-img-upload">📤 Upload Image</button>
+      </div></div>
+      <input id="f-pop-img" value="${esc(p ? p.image_url || '' : '')}" placeholder="https://...jpg"><small style="color:var(--gray)">Uploaded images are saved below as a URL, or paste a direct image URL. Wide images (e.g. 1400×600) look best.</small>
+    </div>
       <div class="a-field"><label>Caption (short title)</label><input id="f-pop-cap" value="${esc(p ? p.caption || '' : '')}" placeholder="e.g. Welcome to Shahryar's Ice Cream Bar"></div>
       <div class="grid-2">
         <div class="a-field"><label>Link (optional)</label><input id="f-pop-link" value="${esc(p ? p.link || '' : '')}" placeholder="https://..."></div>
@@ -458,6 +508,7 @@ async function loadMenu() {
         <button class="a-btn a-btn-ghost" id="btn-cancel-pop">Cancel</button>
         <button class="a-btn a-btn-success" id="btn-save-pop">${p ? 'Save Changes' : 'Add Popup'}</button>
       </div>`;
+    bindImageUpload('btn-pop-img-upload', 'f-pop-img-file', 'f-pop-img', 'popup', 'Image');
     $('#btn-cancel-pop').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
     $('#btn-save-pop').addEventListener('click', async () => {
       const payload = {
@@ -747,17 +798,43 @@ async function loadMenu() {
           <div class="a-field"><label>Tagline</label><input id="s-tagline" value="${esc(num(s.tagline, ''))}"></div>
         </div>
         <div class="grid-2">
-          <div class="a-field"><label>Logo URL (navbar & preloader)</label><input id="s-logo" value="${esc(num(s.logo_url, ''))}"><small style="color:var(--gray)">Leave empty to use the local logo.png.</small></div>
-          <div class="a-field"><label>Favicon URL (browser tab icon)</label><input id="s-favicon" value="${esc(num(s.favicon_url, ''))}"><small style="color:var(--gray)">Leave empty to use local favicon.png.</small></div>
+          <div class="a-field"><label>Logo URL (navbar & preloader)</label>
+            <div class="upload-row"><div class="upload-col">
+              <input type="file" id="f-logo-file" accept="image/*" hidden>
+              <button type="button" class="a-btn a-btn-ghost" id="btn-logo-upload">📤 Upload</button>
+            </div></div>
+            <input id="s-logo" value="${esc(num(s.logo_url, ''))}"><small style="color:var(--gray)">Uploaded images are saved below as a URL. Leave empty to use local logo.png.</small>
+          </div>
+          <div class="a-field"><label>Favicon URL (browser tab icon)</label>
+            <div class="upload-row"><div class="upload-col">
+              <input type="file" id="f-favicon-file" accept="image/*" hidden>
+              <button type="button" class="a-btn a-btn-ghost" id="btn-favicon-upload">📤 Upload</button>
+            </div></div>
+            <input id="s-favicon" value="${esc(num(s.favicon_url, ''))}"><small style="color:var(--gray)">Uploaded images are saved below as a URL. Leave empty to use local favicon.png.</small>
+          </div>
         </div>
         <h3>Hero</h3>
         <div class="grid-2">
           <div class="a-field"><label>Hero Pill Text</label><input id="s-pill" value="${esc(num(s.hero_pill, ''))}"></div>
-          <div class="a-field"><label>Hero Image URL</label><input id="s-heroimg" value="${esc(num(s.hero_image, ''))}"></div>
+          <div class="a-field"><label>Hero Image URL (side photo)</label>
+            <div class="upload-row"><div class="upload-col">
+              <input type="file" id="f-heroimg-file" accept="image/*" hidden>
+              <button type="button" class="a-btn a-btn-ghost" id="btn-heroimg-upload">📤 Upload</button>
+            </div></div>
+            <input id="s-heroimg" value="${esc(num(s.hero_image, ''))}">
+          </div>
         </div>
-        <div class="grid-2">
-          <div class="a-field"><label>Title Line 1</label><input id="s-t1" value="${esc(num(s.hero_title_1, ''))}"></div>
-          <div class="a-field"><label>Title Line 2 (highlight)</label><input id="s-t2" value="${esc(num(s.hero_title_2, ''))}"></div>
+        <div class="a-field">
+          <label>Hero Logo</label>
+          <div class="upload-row">
+            <div class="upload-col">
+              <input type="file" id="f-hero-logo-file" accept="image/*" hidden>
+              <button type="button" class="a-btn a-btn-ghost" id="btnHeroLogoUpload">📤 Upload Logo</button>
+              <button type="button" class="a-btn a-btn-ghost" id="btnHeroLogoClear" ${s.hero_logo_url ? '' : 'style="display:none"'}>Clear Logo</button>
+            </div>
+          </div>
+          <input id="s-herologo" value="${esc(num(s.hero_logo_url, ''))}" placeholder="https://... or upload above" readonly>
+          <small style="color:var(--gray)">Uploaded images are stored in Supabase Storage and saved below as a URL — not the raw image. This logo replaces the "Shahryar's" text in the hero heading. Leave empty to keep the default herologo.png.</small>
         </div>
         <div class="a-field"><label>Hero Description</label><textarea id="s-herodesc" rows="2">${esc(num(s.hero_desc, ''))}</textarea></div>
         <h3>Sections Visibility</h3>
@@ -789,6 +866,36 @@ async function loadMenu() {
         state.textContent = galToggle.checked ? 'On' : 'Off';
       });
     }
+
+    const heroFile = $('#f-hero-logo-file');
+    const heroUploadBtn = $('#btnHeroLogoUpload');
+    const heroClearBtn = $('#btnHeroLogoClear');
+    if (heroUploadBtn && heroFile) {
+      heroUploadBtn.addEventListener('click', () => heroFile.click());
+      heroFile.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          toast('Uploading logo…');
+          const url = await uploadToStorage(file, 'hero-logo');
+          $('#s-herologo').value = url;
+          if (heroClearBtn) heroClearBtn.style.display = '';
+          toast('Logo uploaded — saved as URL', 'ok');
+        } catch (err) {
+          toast('Upload failed: ' + (err.message || err) + ' — is the storage bucket "images" created?', 'err');
+        }
+      });
+    }
+    if (heroClearBtn) {
+      heroClearBtn.addEventListener('click', () => {
+        $('#s-herologo').value = '';
+        heroClearBtn.style.display = 'none';
+        if (heroFile) heroFile.value = '';
+      });
+    }
+    bindImageUpload('btn-logo-upload', 'f-logo-file', 's-logo', 'logo', 'Logo');
+    bindImageUpload('btn-favicon-upload', 'f-favicon-file', 's-favicon', 'favicon', 'Favicon');
+    bindImageUpload('btn-heroimg-upload', 'f-heroimg-file', 's-heroimg', 'hero-img', 'Hero image');
     } catch (e) { $('#settingsForm').innerHTML = '<p class="empty">Failed to load settings.</p>'; }
   }
 
@@ -802,8 +909,7 @@ async function loadMenu() {
         favicon_url: val('s-favicon'),
         hero_pill: val('s-pill'),
         hero_image: val('s-heroimg'),
-        hero_title_1: val('s-t1'),
-        hero_title_2: val('s-t2'),
+        hero_logo_url: val('s-herologo'),
         hero_desc: val('s-herodesc'),
         gallery_enabled: $('#s-gallery-enabled').checked,
         phone: val('s-phone'),
@@ -816,6 +922,139 @@ async function loadMenu() {
       await D.setSettings(patch);
       toast('Settings saved', 'ok');
     } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+  }
+
+  /* ══════════════ ABOUT ══════════════ */
+  async function loadAbout() {
+    try {
+      const s = await D.getSettings();
+      if (!s) { $('#aboutForm').innerHTML = '<p class="empty">Settings row missing.</p>'; return; }
+      const v = (x, d) => esc(x == null ? d : x);
+      $('#aboutForm').innerHTML = `
+        <h3>Section Header</h3>
+        <div class="grid-3">
+          <div class="a-field"><label>Overline</label><input id="a-overline" value="${v(s.about_overline, 'Our Story')}"></div>
+          <div class="a-field"><label>Heading</label><input id="a-title" value="${v(s.about_title, 'About Us')}"></div>
+          <div class="a-field"><label>Subtitle</label><input id="a-subtitle" value="${v(s.about_subtitle, 'Your favorite local ice cream spot in Gojra')}"></div>
+        </div>
+        <h3>Main Content</h3>
+        <div class="a-field"><label>Big Title</label><input id="a-heading" value="${v(s.about_heading, "Shahryar's Ice Cream Bar")}"></div>
+        <div class="a-field"><label>Description</label><textarea id="a-desc" rows="3">${v(s.about_desc, '')}</textarea></div>
+        <div class="grid-3">
+          <div class="a-field"><label>Tag 1</label><input id="a-tag1" value="${v(s.about_tag1, '⭐ Dine-in')}"></div>
+          <div class="a-field"><label>Tag 2</label><input id="a-tag2" value="${v(s.about_tag2, '🚗 Drive-through')}"></div>
+          <div class="a-field"><label>Tag 3</label><input id="a-tag3" value="${v(s.about_tag3, '✨ Fresh Daily')}"></div>
+        </div>
+        <h3>Feature Card</h3>
+        <div class="grid-2">
+          <div class="a-field"><label>Card Title</label><input id="a-card-title" value="${v(s.about_card_title, "A Taste You'll Love")}"></div>
+          <div class="a-field"><label>Card Text</label><textarea id="a-card-desc" rows="2">${v(s.about_card_desc, 'Fresh scoops. Delicious moments — made with love in the heart of Gojra.')}</textarea></div>
+        </div>
+        <p class="hint" style="margin:4px 0 0;">The rating and review count shown in this section are edited under Site Settings → Rating.</p>`;
+    } catch (e) { $('#aboutForm').innerHTML = '<p class="empty">Failed to load.</p>'; }
+  }
+
+  async function saveAbout() {
+    try {
+      const patch = {
+        about_overline: $('#a-overline').value.trim(),
+        about_title: $('#a-title').value.trim(),
+        about_subtitle: $('#a-subtitle').value.trim(),
+        about_heading: $('#a-heading').value.trim(),
+        about_desc: $('#a-desc').value.trim(),
+        about_tag1: $('#a-tag1').value.trim(),
+        about_tag2: $('#a-tag2').value.trim(),
+        about_tag3: $('#a-tag3').value.trim(),
+        about_card_title: $('#a-card-title').value.trim(),
+        about_card_desc: $('#a-card-desc').value.trim()
+      };
+      await D.setSettings(patch);
+      toast('About section saved', 'ok');
+    } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+  }
+
+  /* ══════════════ REVIEWS ══════════════ */
+  async function loadReviewsHeader() {
+    try {
+      const s = await D.getSettings();
+      if (!s) { $('#reviewsHeaderForm').innerHTML = '<p class="empty">Settings row missing.</p>'; return; }
+      const v = (x, d) => esc(x == null ? d : x);
+      $('#reviewsHeaderForm').innerHTML = `
+        <div class="grid-3">
+          <div class="a-field"><label>Overline</label><input id="r-overline" value="${v(s.reviews_overline, 'Loved by Gojra')}"></div>
+          <div class="a-field"><label>Heading</label><input id="r-title" value="${v(s.reviews_title, 'What Customers Say')}"></div>
+          <div class="a-field"><label>Subtitle</label><input id="r-subtitle" value="${v(s.reviews_subtitle, '')}" placeholder="e.g. Rated 4.4/5 from over 705 happy reviews"><small style="color:var(--gray)">Leave empty to auto-build from Rating &amp; Review count.</small></div>
+        </div>`;
+    } catch (e) { $('#reviewsHeaderForm').innerHTML = '<p class="empty">Failed to load.</p>'; }
+  }
+
+  async function saveReviewsHeader() {
+    try {
+      const patch = {
+        reviews_overline: $('#r-overline').value.trim(),
+        reviews_title: $('#r-title').value.trim(),
+        reviews_subtitle: $('#r-subtitle').value.trim()
+      };
+      await D.setSettings(patch);
+      toast('Reviews section saved', 'ok');
+    } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+  }
+
+  async function loadReviews() {
+    try {
+      const reviews = await D.getReviews();
+      const list = $('#reviewList');
+      if (!reviews.length) { list.innerHTML = '<p class="empty">No reviews yet. Click "Add Review".</p>'; return; }
+      const starStr = (n) => '★'.repeat(Math.max(0, Math.min(5, Math.round(parseFloat(n) || 0)))) + '☆'.repeat(Math.max(0, 5 - Math.round(parseFloat(n) || 0)));
+      list.innerHTML = reviews.map(r => `<div class="admin-card" style="align-items:flex-start;">
+        <span class="rev-stars-badge">${starStr(r.stars)}</span>
+        <div class="g-info">
+          <h4>${esc(r.author_name || 'Anonymous')}</h4>
+          <div class="sub">${esc(r.author_source || 'Google Review')}</div>
+          <p style="margin:6px 0 0;font-size:0.85rem;color:var(--text);max-width:60ch;">${esc(r.text || '')}</p>
+        </div>
+        <div class="g-actions">
+          <button class="a-btn a-btn-ghost" data-act="edit-review" data-id="${r.id}">Edit</button>
+          <button class="a-btn a-btn-danger" data-act="del-review" data-id="${r.id}">Delete</button>
+        </div>
+      </div>`).join('');
+    } catch (e) { $('#reviewList').innerHTML = '<p class="empty">Failed to load.</p>'; }
+  }
+
+  function renderReviewForm(r) {
+    const form = $('#reviewForm');
+    form.classList.remove('hidden');
+    form.innerHTML = `<h3>${r ? 'Edit Review' : 'Add Review'}</h3>
+      <div class="grid-2">
+        <div class="a-field"><label>Author Name *</label><input id="f-rev-name" value="${esc(r ? r.author_name : '')}" placeholder="e.g. Ahmed R."></div>
+        <div class="a-field"><label>Stars (1–5)</label><input id="f-rev-stars" type="number" min="1" max="5" value="${r ? (r.stars || 5) : 5}"></div>
+      </div>
+      <div class="a-field"><label>Review Text</label><textarea id="f-rev-text" rows="3" placeholder="Their experience…">${esc(r ? r.text || '' : '')}</textarea></div>
+      <div class="grid-2">
+        <div class="a-field"><label>Source</label><input id="f-rev-source" value="${esc(r ? (r.author_source || 'Google Review') : 'Google Review')}"></div>
+        <div class="a-field"><label>Sort Order</label><input id="f-rev-sort" type="number" value="${r ? (r.sort_order || 0) : 0}"></div>
+      </div>
+      <div class="actions">
+        <button class="a-btn a-btn-ghost" id="btn-cancel-rev">Cancel</button>
+        <button class="a-btn a-btn-success" id="btn-save-rev">${r ? 'Save Changes' : 'Add Review'}</button>
+      </div>`;
+    $('#btn-cancel-rev').addEventListener('click', () => { form.classList.add('hidden'); form.innerHTML = ''; });
+    $('#btn-save-rev').addEventListener('click', async () => {
+      const payload = {
+        author_name: $('#f-rev-name').value.trim(),
+        text: $('#f-rev-text').value.trim(),
+        author_source: $('#f-rev-source').value.trim(),
+        stars: Math.max(1, Math.min(5, parseInt($('#f-rev-stars').value, 10) || 5)),
+        sort_order: parseInt($('#f-rev-sort').value, 10) || 0
+      };
+      if (!payload.author_name) { toast('Author name is required', 'err'); return; }
+      try {
+        if (r) { await D.update('reviews', r.id, payload); toast('Review updated', 'ok'); }
+        else { await D.insert('reviews', payload); toast('Review added', 'ok'); }
+        form.classList.add('hidden'); form.innerHTML = '';
+        loadReviews();
+      } catch (e) { toast('Save failed: ' + (e.message || e), 'err'); }
+    });
   }
 
   /* ══════════════ EVENT DELEGATION (list actions) ══════════════ */
@@ -925,6 +1164,18 @@ async function loadMenu() {
       await D.update('site_requests', id, { status: btn.value });
       toast('Status updated', 'ok');
     }
+    /* REVIEWS */
+    if (act === 'edit-review') {
+      const reviews = await D.getReviews();
+      renderReviewForm(reviews.find(r => r.id === id));
+      $('#reviewForm').scrollIntoView({ behavior: 'smooth' });
+    }
+    if (act === 'del-review') {
+      if (confirm('Delete this review?')) {
+        try { await D.remove('reviews', id); toast('Review deleted', 'ok'); loadReviews(); }
+        catch (e) { toast('Delete failed: ' + (e.message || e), 'err'); }
+      }
+    }
   });
 
   /* ── Add buttons ── */
@@ -988,6 +1239,9 @@ async function loadMenu() {
   $('#btnAddDomain').addEventListener('click', () => { renderDomainForm(null); $('#domainForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnAddRequest').addEventListener('click', () => { renderRequestForm(null); $('#requestForm').scrollIntoView({ behavior: 'smooth' }); });
   $('#btnSaveSettings').addEventListener('click', saveSettings);
+  $('#btnSaveAbout').addEventListener('click', saveAbout);
+  $('#btnSaveReviewsHeader').addEventListener('click', saveReviewsHeader);
+  $('#btnAddReview').addEventListener('click', () => { renderReviewForm(null); $('#reviewForm').scrollIntoView({ behavior: 'smooth' }); });
 
   function initAdmin() {
     (async function () {
@@ -997,7 +1251,7 @@ async function loadMenu() {
       } catch (e) {
         setConn(false, 'Check SQL schema');
       }
-      loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadPopups(); loadHours(); loadDomains(); loadRequests(); loadSettings();
+      loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadPopups(); loadHours(); loadDomains(); loadRequests(); loadSettings(); loadAbout(); loadReviewsHeader(); loadReviews();
     })();
   }
 

@@ -72,7 +72,9 @@
     <button data-tab="gallery">📸 Gallery</button>
     <button data-tab="popups">🎪 Popups</button>
     <button data-tab="hours">🕐 Opening Hours</button>
-    <button data-tab="domain">🌐 Domain & Requests</button>
+    <button data-tab="domain">🌐 Domains</button>
+    <button data-tab="about">📖 About</button>
+    <button data-tab="reviews">⭐ Reviews</button>
     <button data-tab="settings">⚙️ Site Settings</button>
   </nav>
 
@@ -162,6 +164,33 @@
       <p class="hint">Request any website change, adding a new page, or a domain renewal. Our team will pick it up.</p>
       <div id="requestList" class="admin-list"><p class="empty">Loading…</p></div>
       <div id="requestForm" class="a-form hidden"></div>
+    </section>
+
+    <!-- ══════════ ABOUT ══════════ -->
+    <section class="admin-panel" id="panel-about">
+      <div class="panel-head">
+        <h2>About Section</h2>
+        <button class="a-btn a-btn-primary" id="btnSaveAbout">Save About</button>
+      </div>
+      <p class="hint">Controls the "About Us" section on the homepage. Rating and review count are edited under Site Settings.</p>
+      <div id="aboutForm" class="a-form"><p class="empty">Loading…</p></div>
+    </section>
+
+    <!-- ══════════ REVIEWS ══════════ -->
+    <section class="admin-panel" id="panel-reviews">
+      <div class="panel-head">
+        <h2>Reviews Section</h2>
+        <button class="a-btn a-btn-primary" id="btnSaveReviewsHeader">Save Section</button>
+      </div>
+      <p class="hint">Controls the section header and individual review cards on the homepage.</p>
+      <div id="reviewsHeaderForm" class="a-form"><p class="empty">Loading…</p></div>
+
+      <div class="panel-head" style="margin-top:28px;">
+        <h2 style="margin:0">Reviews</h2>
+        <button class="a-btn a-btn-primary" id="btnAddReview">+ Add Review</button>
+      </div>
+      <div id="reviewList" class="admin-list"><p class="empty">Loading…</p></div>
+      <div id="reviewForm" class="a-form hidden"></div>
     </section>
 
     <!-- ══════════ SETTINGS ══════════ -->

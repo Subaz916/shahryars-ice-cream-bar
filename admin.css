@@ -125,53 +125,101 @@ body::after {
 .conn-badge.ok { background: rgba(52, 211, 153, 0.15); border-color: rgba(52, 211, 153, 0.3); color: var(--green); }
 .conn-badge.err { background: rgba(248, 113, 113, 0.15); border-color: rgba(248, 113, 113, 0.3); color: var(--red); }
 
-/* ── Tabs ── */
+/* ── Tabs — Liquid Glass ── */
 .admin-tabs {
   max-width: 1080px;
-  margin: 20px auto 0;
-  padding: 0 20px;
+  margin: 28px auto 0;
+  padding: 6px;
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)) padding-box,
+              linear-gradient(135deg, rgba(140,198,255,0.35), rgba(170,120,255,0.2), rgba(90,220,180,0.14)) border-box;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   position: relative;
   z-index: 1;
+  isolation: isolate;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(255,255,255,0.05);
 }
-.admin-tabs button {
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  color: var(--text-dim);
-  padding: 9px 16px;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  position: relative;
-  overflow: hidden;
-}
-.admin-tabs button::before {
+.admin-tabs::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--glass-shine);
-  opacity: 0;
-  transition: opacity 0.3s;
+  top: -60%;
+  left: -60%;
+  width: 45%;
+  height: 280%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.14), transparent);
+  transform: rotate(12deg);
+  animation: glassSweep 7s ease-in-out infinite;
+  pointer-events: none;
 }
-.admin-tabs button:hover::before { opacity: 1; }
+@keyframes glassSweep {
+  0%   { transform: translateX(-140%) rotate(12deg); }
+  60%  { transform: translateX(320%) rotate(12deg); }
+  100% { transform: translateX(320%) rotate(12deg); }
+}
+.admin-tabs::-webkit-scrollbar { display: none; }
+.admin-tabs button {
+  flex: 1 1 auto;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: rgba(240,244,255,0.6);
+  padding: 11px 10px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  white-space: nowrap;
+}
 .admin-tabs button:hover {
   color: #fff;
-  border-color: rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.07);
-  box-shadow: 0 0 25px rgba(94, 176, 255, 0.12);
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-1px);
 }
 .admin-tabs button.active {
-  background: linear-gradient(135deg, rgba(94, 176, 255, 0.25), rgba(37, 99, 235, 0.2));
   color: #fff;
-  border-color: rgba(94, 176, 255, 0.4);
-  box-shadow: 0 0 35px rgba(94, 176, 255, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: linear-gradient(135deg, rgba(94,176,255,0.42), rgba(59,130,246,0.3)) padding-box,
+              linear-gradient(135deg, rgba(160,210,255,0.55), rgba(94,176,255,0.35)) border-box;
+  border: 1px solid transparent;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 24px rgba(94,176,255,0.28),
+    0 6px 24px rgba(37,99,235,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.admin-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 16%;
+  right: 16%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  animation: tabIndicator 2.5s ease-in-out infinite;
+}
+@keyframes tabIndicator {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ── Main ── */
@@ -539,6 +587,19 @@ body::after {
 .toggle-state { font-size: 0.8rem; font-weight: 600; color: var(--gray); min-width: 46px; }
 .toggle-row input:checked ~ .toggle-state { color: var(--green); }
 
+/* ── Upload row (hero logo) ── */
+.upload-row { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.upload-thumb {
+  width:96px; height:96px; object-fit:contain; flex-shrink:0;
+  border-radius:var(--radius-sm); background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1); padding:8px;
+}
+.upload-col { display:flex; flex-direction:column; gap:8px; }
+.rev-stars-badge {
+  font-size:1.05rem; color:var(--orange); letter-spacing:2px;
+  flex-shrink:0; min-width:70px; text-align:center;
+}
+
 /* ── Hours rows ── */
 .hours-block {
   background: rgba(255,255,255,0.04);
@@ -767,10 +828,14 @@ body::after {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
+  .admin-tabs {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .admin-tabs::before { display: none; }
   .admin-tabs button {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: rgba(255,255,255,0.07);
   }
   .admin-tabs button.active {
     backdrop-filter: none;
@@ -939,20 +1004,17 @@ body::after {
 
   /* ── Tabs - horizontal scroll ── */
   .admin-tabs {
-    gap: 6px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    gap: 3px;
+    padding: 5px;
+    border-radius: 16px;
   }
-  .admin-tabs::-webkit-scrollbar { display: none; }
   .admin-tabs button {
-    padding: 8px 14px;
-    font-size: 0.78rem;
+    padding: 9px 12px;
+    font-size: 0.76rem;
     white-space: nowrap;
-    min-height: 36px;
+    min-height: 38px;
     flex-shrink: 0;
+    border-radius: 12px;
   }
 
   /* ── Main container ── */

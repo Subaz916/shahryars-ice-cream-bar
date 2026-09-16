@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const carouselViewport = document.getElementById('reviewsViewport');
   const carouselTrack = document.getElementById('reviewsTrack');
   if (carouselViewport && carouselTrack) {
-    const cardsArr = Array.from(carouselTrack.children);
+    let cardsArr = Array.from(carouselTrack.children);
     const baseGap = 24;
     const prevBtn = document.getElementById('revPrev');
     const nextBtn = document.getElementById('revNext');
@@ -327,6 +327,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setup();
     restartTimer();
+
+    window.__reviewsReinit = () => {
+      if (timer) { clearInterval(timer); timer = null; }
+      cardsArr = Array.from(carouselTrack.children);
+      setup();
+      restartTimer();
+    };
   }
 
 });

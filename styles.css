@@ -399,6 +399,13 @@ section { padding: 100px 0; }
   background-clip: text;
 }
 
+.hero-logo {
+  display: inline-block;
+  height: clamp(3rem, 6vw, 5rem);
+  width: auto;
+  object-fit: contain;
+}
+
 .hero-tagline {
   font-family: 'Playfair Display', serif;
   font-size: 1.3rem;
@@ -1482,6 +1489,8 @@ section { padding: 100px 0; }
 }
 
 .about-tag:hover { background: var(--accent-light); }
+
+.about-tag[hidden] { display: none; }
 
 /* About Visual Card */
 .about-visual {

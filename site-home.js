@@ -55,8 +55,15 @@
       }
     }
     const h1 = $('.hero-content h1');
-    if (h1 && (s.hero_title_1 || s.hero_title_2)) {
-      h1.innerHTML = `${esc(s.hero_title_1 || '')}<br><span class="highlight">${esc(s.hero_title_2 || '')}</span>`;
+    if (h1 && (s.hero_logo_url || s.hero_title_1 || s.hero_title_2)) {
+      let line1 = '';
+      if (s.hero_logo_url) {
+        line1 = `<img class="hero-logo" src="${esc(s.hero_logo_url)}" alt="${esc(s.brand_name || 'Shahryar')}">`;
+      } else {
+        const existingLogo = h1.querySelector('.hero-logo');
+        line1 = existingLogo ? existingLogo.outerHTML : esc(s.hero_title_1 || '');
+      }
+      h1.innerHTML = `${line1}<br><span class="highlight">${esc(s.hero_title_2 || 'Ice Cream Bar')}</span>`;
     }
     if (s.tagline) {
       const t = $('.hero-tagline'); if (t) t.textContent = s.tagline;
@@ -67,6 +74,27 @@
     if (s.hero_image) {
       const shot = $('.hero-shot img'); if (shot) { shot.src = s.hero_image; shot.setAttribute('srcset', ''); }
     }
+
+    /* About section */
+    if (s.about_overline)  { const el = $('#aboutOverline');  if (el) el.textContent = s.about_overline; }
+    if (s.about_title)     { const el = $('#aboutTitle');     if (el) el.textContent = s.about_title; }
+    if (s.about_subtitle)  { const el = $('#aboutSubtitle');  if (el) el.textContent = s.about_subtitle; }
+    if (s.about_heading)   { const el = $('#aboutHeading');   if (el) el.textContent = s.about_heading; }
+    if (s.about_desc)      { const el = $('#aboutDesc');      if (el) el.textContent = s.about_desc; }
+    if (s.about_tag1)      { const el = $('#aboutTag1');      if (el) el.textContent = s.about_tag1; }
+    if (s.about_tag2)      { const el = $('#aboutTag2');      if (el) el.textContent = s.about_tag2; }
+    if (s.about_tag3) {
+      const el = $('#aboutTag3');
+      if (el) { el.textContent = s.about_tag3; el.hidden = false; }
+    }
+    if (s.about_card_title){ const el = $('#ahcTitle');       if (el) el.textContent = s.about_card_title; }
+    if (s.about_card_desc) { const el = $('#ahcDesc');        if (el) el.textContent = s.about_card_desc; }
+    if (s.rating) { const rs = $('#rcStars'); if (rs) rs.textContent = stars(s.rating); }
+
+    /* Reviews header */
+    if (s.reviews_overline) { const el = $('#reviewsOverline'); if (el) el.textContent = s.reviews_overline; }
+    if (s.reviews_title)    { const el = $('#reviewsTitle');    if (el) el.textContent = s.reviews_title; }
+    if (s.reviews_subtitle) { const el = $('#reviewsSubtitle'); if (el) el.textContent = s.reviews_subtitle; }
     if (s.og_image) {
       let og = $('meta[property="og:image"]');
       if (!og) { og = document.createElement('meta'); og.setAttribute('property', 'og:image'); document.head.appendChild(og); }
@@ -130,6 +158,26 @@
         </div>
       </div>`).join('');
     $$('.flavor-card', parent).forEach(el => el.classList.add('revealed'));
+  }
+
+  function renderReviews(reviews) {
+    const track = $('#reviewsTrack');
+    if (!track || !reviews.length) return;
+    track.innerHTML = reviews.map(r => {
+      const initial = (r.author_name || '?').trim().charAt(0).toUpperCase();
+      return `<div class="review-card">
+        <div class="rev-stars">${stars(r.stars)}</div>
+        <p class="rev-text">${esc(r.text || '')}</p>
+        <div class="rev-author">
+          <span class="rev-avatar">${esc(initial)}</span>
+          <div>
+            <h4>${esc(r.author_name || '')}</h4>
+            <span>${esc(r.author_source || 'Google Review')}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    if (window.__reviewsReinit) window.__reviewsReinit();
   }
 
   function renderGallery(gallery) {
@@ -198,16 +246,18 @@
 
   async function init() {
     try {
-      const [settings, flavors, gallery, hours] = await Promise.all([
+      const [settings, flavors, gallery, hours, reviews] = await Promise.all([
         window.DB.getSettings().catch(() => null),
         window.DB.getFlavors().catch(() => []),
         window.DB.getGallery().catch(() => []),
-        window.DB.getOpeningHours().catch(() => [])
+        window.DB.getOpeningHours().catch(() => []),
+        window.DB.getReviews().catch(() => [])
       ]);
       if (settings) applySettings(settings);
       if (flavors.length) renderFlavors(flavors);
       if (gallery.length) renderGallery(gallery);
       if (hours.length) renderHours(hours);
+      if (reviews.length) renderReviews(reviews);
     } catch (e) {
       console.error('[home] failed to load Supabase data:', e);
     }
