@@ -200,6 +200,17 @@
         <button class="a-btn a-btn-primary" id="btnSaveSettings">Save Settings</button>
       </div>
       <div id="settingsForm" class="a-form"><p class="empty">Loading…</p></div>
+      <div class="panel-head" style="margin-top:32px;">
+        <button type="button" class="a-btn a-btn-ghost docs-toggle" id="docsToggle" aria-expanded="false">
+          <span class="docs-caret">▶</span>
+          📄 Site Documentation
+          <span class="docs-state" id="docsState">Show</span>
+        </button>
+      </div>
+      <p class="hint">Full website documentation — pages, systems, admin panel and backend.</p>
+      <div id="docsWrap" class="docs-wrap" hidden>
+        <pre id="docsContent" class="docs-box"><p class="empty">Loading documentation…</p></pre>
+      </div>
     </section>
 
   </main>

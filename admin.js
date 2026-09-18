@@ -1243,6 +1243,37 @@ async function loadMenu() {
   $('#btnSaveReviewsHeader').addEventListener('click', saveReviewsHeader);
   $('#btnAddReview').addEventListener('click', () => { renderReviewForm(null); $('#reviewForm').scrollIntoView({ behavior: 'smooth' }); });
 
+  /* ══════════════════ SITE DOCUMENTATION (show/hide) ══════════════ */
+  async function loadDocs() {
+    const el = $('#docsContent');
+    if (!el || el.dataset.loaded) return;
+    try {
+      const res = await fetch('DOCUMENT.MD');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      el.textContent = await res.text();
+      el.dataset.loaded = '1';
+    } catch (e) {
+      el.textContent = 'Documentation (DOCUMENT.MD) could not be loaded: ' + (e.message || e);
+      el.dataset.loaded = '1';
+    }
+  }
+
+  function initDocsToggle() {
+    const toggle = $('#docsToggle');
+    const wrap = $('#docsWrap');
+    const state = $('#docsState');
+    if (!toggle || !wrap) return;
+    toggle.addEventListener('click', () => {
+      const open = wrap.hidden;
+      wrap.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      const caret = toggle.querySelector('.docs-caret');
+      if (caret) caret.textContent = open ? '▼' : '▶';
+      if (state) state.textContent = open ? 'Hide' : 'Show';
+      if (open) loadDocs();
+    });
+  }
+
   function initAdmin() {
     (async function () {
       try {
@@ -1251,6 +1282,7 @@ async function loadMenu() {
       } catch (e) {
         setConn(false, 'Check SQL schema');
       }
+      initDocsToggle();
       loadMenu(); loadCats(); loadFlavors(); loadGallery(); loadPopups(); loadHours(); loadDomains(); loadRequests(); loadSettings(); loadAbout(); loadReviewsHeader(); loadReviews();
     })();
   }

@@ -516,6 +516,45 @@ body::after {
   pointer-events: none;
 }
 .a-form.hidden { display: none; }
+.docs-box {
+  margin: 12px 0 0;
+  padding: 18px 20px;
+  max-height: 70vh;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+.docs-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.docs-toggle .docs-caret {
+  display: inline-block;
+  font-size: 0.7rem;
+  transition: transform 0.25s var(--ease, ease);
+}
+.docs-toggle .docs-state {
+  margin-left: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  background: rgba(94, 176, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: 50px;
+}
 .a-form h3 {
   margin: 0 0 6px; font-size: 1.05rem;
   background: linear-gradient(135deg, #fff 0%, #a7c4e8 100%);
