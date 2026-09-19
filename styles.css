@@ -1865,9 +1865,41 @@ section { padding: 100px 0; }
    FOOTER
    ══════════════════════════════════════════════════ */
 .footer {
-  background: var(--dark);
+  position: relative;
+  background: #2D5DA8;
   color: rgba(255,255,255,0.65);
-  padding-top: 80px;
+  padding-top: 0;
+  overflow: hidden;
+}
+
+/* ── Melting cream drip layer (decorative, absolute) ──────────────────
+   footer-drips.png is a transparent PNG: a full-width cream band with
+   organic melted drips. The artwork occupies only rows 235–570 of the
+   file (y=235 is the band's straight top edge, y=570 the longest drip
+   tip). To avoid a transparent gap at the footer's top, the image is
+   shifted up by its own transparent top padding (238/2170 of its width,
+   the extra 3px cover the band's anti-aliased edge), so the cream's edge
+   lands exactly on the footer's top rim and no blue strip can appear
+   above the cream. The footer's `overflow:hidden` clips the surrounding
+   transparent regions.                                                  */
+.footer-drips {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: calc(-238 / 2170 * 100%);   /* crop the transparent top (+3px AA bed) */
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 5px 12px rgba(16, 40, 80, 0.20));
+}
+
+/* Reserve the drip-layer depth (art ≈ 15.3% of width) plus breathing room */
+.footer-drips + .container {
+  position: relative;
+  z-index: 2;
+  padding-top: calc(15.5vw + 46px);
 }
 
 .footer-top {
@@ -2147,7 +2179,6 @@ section { padding: 100px 0; }
   .rev-dots { margin-top: 16px; }
 
   /* Footer */
-  .footer { padding-top: 60px; }
   .footer-top { grid-template-columns: 1fr; gap: 28px; }
   .footer-brand .fb-name { font-size: 1.2rem; }
   .footer-col h4 { font-size: 0.82rem; margin-bottom: 12px; }
