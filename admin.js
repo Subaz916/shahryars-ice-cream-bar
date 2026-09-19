@@ -844,6 +844,12 @@ async function loadMenu() {
           <span class="toggle-label">Show Gallery section on website</span>
           <span class="toggle-state ${s.gallery_enabled !== false ? 'on' : 'off'}">${s.gallery_enabled !== false ? 'On' : 'Off'}</span>
         </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="s-payment-pending" ${s.payment_pending === true ? 'checked' : ''}>
+          <span class="toggle-track"></span>
+          <span class="toggle-label">Website payment pending — show red locked strip on every page</span>
+          <span class="toggle-state ${s.payment_pending === true ? 'on' : 'off'}">${s.payment_pending === true ? 'On' : 'Off'}</span>
+        </label>
         <h3>Contact</h3>
         <div class="grid-2">
           <div class="a-field"><label>Phone</label><input id="s-phone" value="${esc(num(s.phone, ''))}"></div>
@@ -864,6 +870,16 @@ async function loadMenu() {
         state.classList.toggle('on', galToggle.checked);
         state.classList.toggle('off', !galToggle.checked);
         state.textContent = galToggle.checked ? 'On' : 'Off';
+      });
+    }
+
+    const payToggle = $('#s-payment-pending');
+    if (payToggle) {
+      payToggle.addEventListener('change', () => {
+        const state = payToggle.closest('.toggle-row').querySelector('.toggle-state');
+        state.classList.toggle('on', payToggle.checked);
+        state.classList.toggle('off', !payToggle.checked);
+        state.textContent = payToggle.checked ? 'On' : 'Off';
       });
     }
 
@@ -912,6 +928,7 @@ async function loadMenu() {
         hero_logo_url: val('s-herologo'),
         hero_desc: val('s-herodesc'),
         gallery_enabled: $('#s-gallery-enabled').checked,
+        payment_pending: $('#s-payment-pending').checked,
         phone: val('s-phone'),
         whatsapp: val('s-wa'),
         address: val('s-address'),

@@ -290,6 +290,38 @@ section { padding: 100px 0; }
 }
 
 /* ══════════════════════════════════════════════════
+   PAYMENT PENDING STRIP (locked-site notice)
+   Shown at the very top of every page while
+   settings.payment_pending = true.
+   ══════════════════════════════════════════════════ */
+.lock-strip {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1001;
+  background: linear-gradient(90deg, #b71c1c, #e53935 50%, #b71c1c);
+  color: #fff;
+  text-align: center;
+  padding: 10px 16px;
+  box-shadow: 0 2px 12px rgba(183, 28, 28, 0.35);
+}
+
+.lock-strip.show { display: block; }
+
+.lock-strip p {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+}
+
+/* While the strip is visible, drop the fixed navbar/mobile menu below it */
+body.lock-strip-on .navbar { top: var(--lock-strip-h, 42px); }
+body.lock-strip-on .mobile-menu { top: calc(76px + var(--lock-strip-h, 42px)); }
+body.lock-strip-on .hero { padding-top: calc(76px + var(--lock-strip-h, 42px)); }
+
+/* ══════════════════════════════════════════════════
    HERO
    ══════════════════════════════════════════════════ */
 .hero {

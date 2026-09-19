@@ -22,6 +22,11 @@
 </head>
 <body>
 
+  <!-- Payment pending / site lock strip (shown while settings.payment_pending = true) -->
+  <div class="lock-strip" id="lockStrip">
+    <p>Website payment is pending — the website is locked and will be usable once the payment is complete.</p>
+  </div>
+
   <!-- Preloader -->
   <div class="preloader" id="preloader">
     <img src="logo.png" alt="Shahryar's Ice Cream Bar">
@@ -130,6 +135,7 @@
   <script src="supabase-config.js"></script>
   <script src="supabase-client.js"></script>
   <script src="data.js"></script>
+  <script src="site-lock.js"></script>
   <script src="site-menu.js"></script>
   <script src="script.js"></script>
 </body>
