@@ -58,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileMenu.classList.remove('active');
   };
 
+  const mmClose = document.getElementById('mmClose');
+  if (mmClose) mmClose.addEventListener('click', closeMobileMenu);
+
   mobileMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', closeMobileMenu);
   });
